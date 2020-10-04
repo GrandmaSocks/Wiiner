@@ -27,18 +27,18 @@
 <b> <h2> Key Bindings </h2> </b>
 <b>All binds are optimized for 61 key keyboards</b>
 
-<b>Toggle Menu: F6</b>
-<b>BHOP: F7</b>
-<b>ESP: F8</b>
-<b>RCS: F9</b>
-<b>BoneESP: Up Arrow</b>
-<b>HVH Mode: Left Arrow</b>
-<b>Aimbot: Right Arrow</b>
-<b>Uninject: Down Arrow</b>
-<b>Chams: Minus</b>
-<b>Thirdperson: Middle Mouse Button</b>
-<b>Clantag: Comma</b>
-<b>Recoil Crosshair: Period</b>
-<b>Arm Chams: Plus</b>
-<b>AntiFlash: F11</b>
-<b>AntiAim: Right Shift</b>
+</li>Toggle Menu: F6</li>
+</li>BHOP: F7</li>
+</li>ESP: F8</li>
+</li>RCS: F9</li>
+</li>BoneESP: Up Arrow</li>
+</li>HVH Mode: Left Arrow</li>
+</li>Aimbot: Right Arrow</li>
+</li>Uninject: Down Arrow</li>
+</li>Chams: Minus</li>
+</li>Thirdperson: Middle Mouse Button</li>
+</li>Clantag: Comma</li>
+</li>Recoil Crosshair: Period</li>
+</li>Arm Chams: Plus</li>
+</li>AntiFlash: F11</li>
+</li>AntiAim: Right Shift</li>
