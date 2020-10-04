@@ -28,6 +28,7 @@
 <b>All binds are optimized for 61 key keyboards</b>
 
 </li>Toggle Menu: F6</li>
+
 </li>BHOP: F7</li>
 </li>ESP: F8</li>
 </li>RCS: F9</li>
