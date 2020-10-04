@@ -2,7 +2,7 @@
 
 void esp()
 {
-	if (variables::espToggle == true && interfaces::engine->is_connected())
+	if (variables::espToggle == true && interfaces::engine->is_in_game())
 	{
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
 		{
@@ -86,7 +86,7 @@ void esp()
 
 				if (pCSPlayer->is_flashed())
 				{
-					render::draw_text_string(vecHeadScreen.x + 40, vecHeadScreen.y, render::fonts::watermark_font, "flashed", true, color(255, 255, 0));
+					render::draw_text_string(vecHeadScreen.x / -6, vecHeadScreen.y, render::fonts::watermark_font, "flashed", true, color(255, 255, 0));
 				}
 			}
 		}

@@ -31,3 +31,5 @@ void bombesp();
 void clantag();
 
 void crosshair();
+
+void antiaim(c_usercmd* cmd);

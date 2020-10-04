@@ -39,7 +39,7 @@ void featureToggle() // this had to go somewhere
 	{
 		variables::chams++;
 
-		if (variables::chams > 4)
+		if (variables::chams > 5)
 		{
 			variables::chams = 0;
 		}
@@ -70,10 +70,29 @@ void featureToggle() // this had to go somewhere
 	{
 		variables::arms++;
 
-		if (variables::arms > 2)
+		if (variables::arms > 4)
 		{
 			variables::arms = 0;
 		}
+	}
+	if (GetAsyncKeyState(VK_F11) & 1)
+	{
+		variables::antiflash++;
+
+		if (variables::antiflash > 2)
+		{
+			variables::antiflash = 0;
+		}
+	}
+	if (GetAsyncKeyState(VK_RSHIFT) & 1)
+	{
+		variables::antiaim++;
+
+		if (variables::antiaim > 4)
+		{
+			variables::antiaim = 0;
+		}
+
 	}
 }
 
@@ -143,9 +162,17 @@ void menu::render()
 		{
 			render::text(233, 55, render::fonts::watermark_font, "Aimbot", false, color(120, 255, 255, 255));
 		}
-		if (variables::antiflash == false)
+		if (variables::antiflash == 0)
 		{
 			render::text(283, 25, render::fonts::watermark_font, "Antiflash", false, color::white());
+		}
+		if (variables::antiflash == 1)
+		{
+			render::text(283, 25, render::fonts::watermark_font, "Antiflash", false, color(120, 255, 255, 255));
+		}
+		if (variables::antiflash == 2)
+		{
+			render::text(283, 25, render::fonts::watermark_font, "Antiflash", false, color(255, 50, 255, 255));
 		}
 		if (variables::chams == 1)
 		{
@@ -162,6 +189,10 @@ void menu::render()
 		if (variables::chams == 4)
 		{
 			render::text(283, 40, render::fonts::watermark_font, "Chams", false, color(255, 255, 0, 255));
+		}
+		if (variables::chams == 5)
+		{
+			render::text(283, 40, render::fonts::watermark_font, "Chams", false, color(50, 255, 50, 255));
 		}
 		if (variables::chams == 0)
 		{
@@ -206,6 +237,34 @@ void menu::render()
 		if (variables::arms == 2)
 		{
 			render::text(333, 55, render::fonts::watermark_font, "Arms", false, color(255, 50, 255, 255));
+		}
+		if (variables::arms == 3)
+		{
+			render::text(333, 55, render::fonts::watermark_font, "Arms", false, color(255, 0, 0, 255));
+		}
+		if (variables::arms == 4)
+		{
+			render::text(333, 55, render::fonts::watermark_font, "Arms", false, color(255, 255, 0, 255));
+		}
+		if (variables::antiaim == 1)
+		{
+			render::text(383, 25, render::fonts::watermark_font, "AA", false, color(120, 255, 255, 255));
+		}
+		if (variables::antiaim == 2)
+		{
+			render::text(383, 25, render::fonts::watermark_font, "AA", false, color(255, 50, 255, 255));
+		}
+		if (variables::antiaim == 3)
+		{
+			render::text(383, 25, render::fonts::watermark_font, "AA", false, color(255, 0, 0, 255));
+		}
+		if (variables::antiaim == 4)
+		{
+			render::text(383, 25, render::fonts::watermark_font, "AA", false, color(255, 255, 0, 255));
+		}
+		if (variables::antiaim == 0)
+		{
+			render::text(383, 25, render::fonts::watermark_font, "AA", false, color(255, 255, 255, 255));
 		}
 	}
 

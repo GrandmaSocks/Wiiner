@@ -19,6 +19,15 @@ TO-DO
 
 */
 
+int random(int min, int max) {
+	static bool first = true;
+	if (first) {
+		srand(time(NULL));
+		first = false;
+	}
+	return min + rand() % ((max + 1) - min);
+}
+
 player_t* get_rage_target(c_usercmd* cmd)
 {
 
@@ -91,4 +100,47 @@ void hvhmode(c_usercmd* cmd)
 
 	}
 	else {}
+}
+
+void antiaim(c_usercmd* cmd)
+{
+	if (!csgo::local_player)
+		return;
+
+	if (cmd->buttons & in_attack ||
+		cmd->buttons & in_use ||
+		csgo::local_player->move_type() == movetype_ladder ||
+		csgo::local_player->move_type() == movetype_noclip)
+		return;
+
+	float yaw_base;
+	vec3_t engine_angles;
+	interfaces::engine->get_view_angles(engine_angles);
+	yaw_base = engine_angles.y;
+
+	if (variables::antiaim == 1)
+	{
+		vec3_t angles = cmd->viewangles = vec3_t(89.f, yaw_base + 180.f, 0.f);
+		csgo::local_player->set_angles(angles);
+	}
+
+	if (variables::antiaim == 2)
+	{
+		vec3_t angles = cmd->viewangles = vec3_t(89.f, yaw_base + 180.f, 0.f);
+		cmd->viewangles.y += random(-35, 35);
+		csgo::local_player->set_angles(angles);
+	}
+
+	if (variables::antiaim == 3)
+	{
+		vec3_t angles =cmd->viewangles = vec3_t(89.f, yaw_base + (cmd->command_number % 2 ? -90.f : 90.f), 0.f);
+		csgo::local_player->set_angles(angles);
+	}
+
+	if (variables::antiaim == 4)
+	{
+		cmd->tick_count = INT_MAX;
+		cmd->command_number = INT_MAX;
+	}
+	
 }

@@ -21,7 +21,7 @@ void override_material_gloss(bool ignorez, bool wireframe, const color& rgba) {
 }
 
 void override_material_crystal(bool ignorez, bool wireframe, const color& rgba) {
-	auto material = interfaces::material_system->find_material("models/inventory_items/trophy_majors/crystal_clear.vmt", TEXTURE_GROUP_MODEL);
+	auto material = interfaces::material_system->find_material("models/inventory_items/trophy_majors/crystal_blue", TEXTURE_GROUP_MODEL);
 	material->set_material_var_flag(material_var_ignorez, ignorez);
 	material->set_material_var_flag(material_var_wireframe, wireframe);
 	material->alpha_modulate(rgba.a / 255.f);
@@ -127,6 +127,25 @@ void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const mod
 		}
 	}
 
+	if (variables::chams == 5)
+	{
+		if (is_player)
+		{
+			player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+
+			if (!player || !player->is_alive() || player->dormant())
+				return;
+
+			if (player->team() != csgo::local_player->team())
+			{
+				override_material_crystal(true, false, color(50, 255, 255));
+				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+			}
+
+		}
+	}
+
+
 	if (variables::chams == 0)
 	{
 
@@ -160,6 +179,53 @@ void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const mod
 		}
 
 	}
+
+	if (variables::arms == 3)
+	{
+		bool arms = strstr(mdl->name, "models/arms") != nullptr;
+
+		if (arms)
+		{
+			if (csgo::local_player && csgo::local_player->is_alive())
+			{
+				override_material_crystal(true, false, color(120, 255, 255, 255));
+			}
+		}
+
+	}
+
+	if (variables::arms == 4)
+	{
+		bool arms = strstr(mdl->name, "models/arms") != nullptr;
+		bool weapons = strstr(mdl->name, "models/weapons") != nullptr;
+		bool skins = strstr(mdl->name, "models/skins") != nullptr;
+
+		if (arms)
+		{
+			if (csgo::local_player && csgo::local_player->is_alive())
+			{
+				override_material_crystal(true, false, color(120, 255, 255, 255));
+			}
+		}
+
+		if (weapons)
+		{
+			if (csgo::local_player && csgo::local_player->is_alive())
+			{
+				override_material_crystal(true, false, color(120, 255, 255, 255));
+			}
+		}
+
+		if (skins)
+		{
+			if (csgo::local_player && csgo::local_player->is_alive())
+			{
+				override_material_crystal(true, false, color(120, 255, 255, 255));
+			}
+		}
+
+	}
+
 
 	if (variables::arms == 0)
 	{

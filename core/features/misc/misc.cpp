@@ -1,7 +1,5 @@
 #include "../features.hpp"
 
-extern hooks::draw_model_execute::fn draw_model_execute_original;
-
 void misc::movement::bunny_hop(c_usercmd* cmd) {
 
 	if (variables::bhopToggle == true)
@@ -19,11 +17,18 @@ void misc::movement::bunny_hop(c_usercmd* cmd) {
 
 void antiflash()
 {
-	if (variables::antiflash == true && interfaces::engine->is_connected())
+	if (variables::antiflash == 1)
 	{
-		if (csgo::local_player->flash_alpha() > 0.f)
+		if (csgo::local_player->is_flashed() == true)
 		{
-			csgo::local_player->flash_alpha() = 0.f;
+			csgo::local_player->flash_duration() = 0;
+		}
+	}
+	if (variables::antiflash == 2)
+	{
+		if (csgo::local_player->is_flashed() == true)
+		{
+			csgo::local_player->flash_alpha() = 0.3f;
 		}
 	}
 }

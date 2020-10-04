@@ -69,6 +69,7 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 	prediction::start(cmd); {
 
 		//hvhmode(cmd);
+		antiaim(cmd);
 
 	} prediction::end();
 

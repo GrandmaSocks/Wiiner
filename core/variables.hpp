@@ -2,7 +2,7 @@
 
 namespace variables {
 	inline bool bhopToggle = true;
-	inline bool antiflash = false;
+	inline int antiflash = 0;
 	inline bool rcs = false;
 	inline int boneToggle = 1;
 	inline bool espToggle = true;
@@ -13,6 +13,8 @@ namespace variables {
 	inline int clantag = 0;
 	inline int crosshair = 1;
 	inline int arms = 0;
+	inline bool newcomerDestroyer = false;
+	inline int antiaim = 0;
 
 	namespace menu {
 		inline bool opened = true;
