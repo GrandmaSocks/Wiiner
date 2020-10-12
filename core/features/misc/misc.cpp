@@ -2,7 +2,7 @@
 
 void misc::movement::bunny_hop(c_usercmd* cmd) {
 
-	if (variables::bhopToggle == true)
+	if (variables::pbunny == true)
 	{
 		const int move_type = csgo::local_player->move_type();
 
@@ -12,47 +12,64 @@ void misc::movement::bunny_hop(c_usercmd* cmd) {
 		if (!(csgo::local_player->flags() & fl_onground))
 			cmd->buttons &= ~in_jump;
 	}
-	else {}
+
+	if (variables::lbunny == true) // legit bhop
+	{
+		srand(time(0));
+		int random = rand() % 4 + 1;
+		int jumpamount = 0; 
+
+		const int move_type = csgo::local_player->move_type();
+
+		if (move_type == movetype_ladder || move_type == movetype_noclip || move_type == movetype_observer)
+			return;
+
+		if (!(csgo::local_player->flags() & fl_onground))
+		{
+			if (jumpamount <= 1)
+			{
+				random == 1;
+			}
+
+			if (random == 1 || random == 2 && jumpamount < 3)
+			{
+				cmd->buttons &= ~in_jump;
+				jumpamount++;
+
+				if (jumpamount > 3)
+				{
+					jumpamount = 0;
+				}
+
+			}
+			jumpamount = 0;
+		}
+		
+	}
+
 };
 
 void antiflash()
 {
-	if (variables::antiflash == 1)
+	if (variables::antiflash == true)
 	{
 		if (csgo::local_player->is_flashed() == true)
 		{
 			csgo::local_player->flash_duration() = 0;
 		}
 	}
-	if (variables::antiflash == 2)
-	{
-		if (csgo::local_player->is_flashed() == true)
-		{
-			csgo::local_player->flash_alpha() = 0.3f;
-		}
-	}
 }
 
 void thirdperson()
 {
-	/*vec3_t oldAngles = interfaces::input->camera_offset;
-	if (variables::thirdperson == true)
-	{
-		if (interfaces::input->camera_in_third_person = variables::thirdperson)
-		{
-			interfaces::input->camera_offset.z = 100;
-			interfaces::input->camera_offset.x = 40;
-			vec3_t newAngles = interfaces::input->camera_offset;
-			interfaces::input->camera_offset.clamp();
-			interfaces::input->camera_offset.normalize();
-		}
-		else
-		{
-			interfaces::input->camera_offset = oldAngles;
-		}
-	}
-	*/
+	static bool in_thirdperson = false;
 
+	if (GetAsyncKeyState(VK_MBUTTON) & 1)
+		in_thirdperson = !in_thirdperson;
+
+	if (interfaces::input->camera_in_third_person = in_thirdperson)
+		interfaces::input->camera_offset.z = 100;
+		interfaces::input->camera_offset.x = 0;
 }
 
 void set_clantag(std::string clantag)
@@ -63,7 +80,7 @@ void set_clantag(std::string clantag)
 
 void clantag()
 {
-	if (variables::clantag == 1)
+	if (variables::dtag == true)
 	{
 		static float last_change = 0.f;
 		if (interfaces::globals->realtime - last_change >= 0.25f) {
@@ -96,12 +113,12 @@ void clantag()
 		}
 	}
 
-	if (variables::clantag == 2)
+	if (variables::stag == true)
 	{
 		set_clantag("Wiiner");
 	}
 
-	if (variables::clantag == 0)
+	if (variables::dtag == false || variables::stag == false)
 	{
 		set_clantag("");
 	}
@@ -112,7 +129,7 @@ void clantag()
 void crosshair()
 {
 
-	if (variables::crosshair == 1 && variables::rcs == false)
+	if (variables::crosshair == true && variables::rcs == false)
 	{
 		if (!csgo::local_player || !csgo::local_player->is_alive())
 			return;
@@ -139,7 +156,7 @@ void crosshair()
 
 	}
 
-	if (variables::crosshair == 1 && variables::rcs == true)
+	if (variables::crosshair == true && variables::rcs == true)
 	{
 		interfaces::console->get_convar("crosshair")->set_value(0);
 
@@ -154,10 +171,24 @@ void crosshair()
 		render::draw_xhair(x, y, true, color::white());
 	}
 
-	if (variables::crosshair == 0)
+	if (variables::crosshair == false)
 	{
 		interfaces::console->get_convar("crosshair")->set_value(1);
 	}
 
 }
 
+void log(c_usercmd* cmd)
+{
+	if (interfaces::engine->is_in_game() == true)
+	{
+		std::string viewangles = std::to_string(cmd->viewangles.x);
+
+		render::draw_text_string(20, 40, render::fonts::tabfont, "Viewangles" + viewangles, false, color(255, 255, 0));
+	}
+}
+
+void Fov()
+{
+	float fov = 68.0f;
+}

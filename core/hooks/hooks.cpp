@@ -8,6 +8,7 @@ hooks::create_move::fn create_move_original = nullptr;
 hooks::paint_traverse::fn paint_traverse_original = nullptr;
 hooks::frame_stage_notify::fn frame_stage_notify_original = nullptr;
 hooks::draw_model_execute::fn draw_model_execute_original = nullptr;
+hooks::sv_cheats::fn sv_cheats_original = nullptr;
 
 bool hooks::initialize() {
 	const auto create_move_target = reinterpret_cast<void*>(get_virtual(interfaces::clientmode, 24));
@@ -15,6 +16,7 @@ bool hooks::initialize() {
 	const auto scene_end = reinterpret_cast<void*>(get_virtual(interfaces::render_view, 41));
 	const auto frame_stage_notify = reinterpret_cast<void*>(get_virtual(interfaces::client, 37));
 	const auto draw_model_execute = reinterpret_cast<void*>(get_virtual(interfaces::model_render, 21));
+	const auto sv_cheats = reinterpret_cast<void*>(get_virtual(interfaces::console->get_convar("sv_cheats"), 13));
 
 	if (MH_Initialize() != MH_OK)
 		throw std::runtime_error("failed to initialize MH_Initialize.");
@@ -30,6 +32,9 @@ bool hooks::initialize() {
 
 	if (MH_CreateHook(draw_model_execute, &draw_model_execute::hook, reinterpret_cast<void**>(&draw_model_execute_original)) != MH_OK)
 		throw std::runtime_error("failed to initialize draw_model_execute. (outdated index?)");
+
+	if (MH_CreateHook(sv_cheats, &sv_cheats::hook, reinterpret_cast<void**>(&sv_cheats_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize sv_cheats. (outdated index?)");
 
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
 		throw std::runtime_error("failed to enable hooks.");
@@ -66,10 +71,14 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 	aimbot(cmd);
 	clantag();
 
+	player_t* entity;
+
+	hvhmode(cmd, entity);
+	antiaim(cmd);
+
 	prediction::start(cmd); {
 
-		//hvhmode(cmd);
-		antiaim(cmd);
+		
 
 	} prediction::end();
 
@@ -94,16 +103,11 @@ void __stdcall hooks::paint_traverse::hook(unsigned int panel, bool force_repain
 
 	switch (panel_to_draw) {
 	case fnv::hash("MatSystemTopPanel"):
-		
-		render::text(10, 10, render::fonts::watermark_font, "W", false, color::red());
-		render::text(25, 10, render::fonts::watermark_font, "i", false, color(255,165,0));
-		render::text(35, 10, render::fonts::watermark_font, "i", false, color(255,255,0));
-		render::text(45, 10, render::fonts::watermark_font, "n", false, color::green());
-		render::text(58, 10, render::fonts::watermark_font, "e", false, color::blue());
-		render::text(70, 10, render::fonts::watermark_font, "r", false, color(128,0,128));
+
+		render::draw_text_string(20, 20, render::fonts::tabfont, "Debug", false, color(255, 255, 0));
 
 		menu::toggle();
-		menu::render();
+		menu::render();;
 		antiflash();
 		esp();
 		boneesp();
@@ -112,10 +116,10 @@ void __stdcall hooks::paint_traverse::hook(unsigned int panel, bool force_repain
 		break;
 
 	case fnv::hash("FocusOverlayPanel"):
-
-		//interfaces::panel->set_keyboard_input_enabled(panel, variables::menu::opened);
-		//interfaces::panel->set_mouse_input_enabled(panel, variables::menu::opened); 
 		
+		interfaces::panel->set_keyboard_input_enabled(panel, variables::menu::opened);
+		interfaces::panel->set_mouse_input_enabled(panel, variables::menu::opened);
+
 		break;
 	}
 
@@ -144,12 +148,9 @@ void __stdcall hooks::frame_stage_notify::hook(client_frame_stage_t frame_stage)
 	case FRAME_NET_UPDATE_END:
 		break;
 	case FRAME_RENDER_START:
-		if (local) {
+		if (local)
+		{
 			thirdperson();
-			if (!local->is_alive())
-				interfaces::input->camera_in_third_person = false;
-			if (local->is_alive() && interfaces::input->camera_in_third_person)
-				*(vec3_t*)(((DWORD)local) + 0x31D4 + 0x4) = csgo::angles;
 		}
 		break;
 	case FRAME_RENDER_END:
@@ -183,3 +184,14 @@ void __fastcall hooks::draw_model_execute::hook(void* _this, int edx, i_mat_rend
 	}
 }
 
+bool __fastcall hooks::sv_cheats::hook(PVOID convar, int edx) {
+	static auto cam_think = utilities::pattern_scan("client.dll", sig_cam_think);
+
+	if (!convar)
+		return false;
+
+	if ((_ReturnAddress()) == cam_think)
+		return true;
+	else
+		return sv_cheats_original(convar);
+}

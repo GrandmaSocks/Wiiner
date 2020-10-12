@@ -2,6 +2,8 @@
 
 extern hooks::draw_model_execute::fn draw_model_execute_original;
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void override_material(bool ignorez, bool wireframe, const color& rgba) {
 	auto material = interfaces::material_system->find_material("debug/debugambientcube", TEXTURE_GROUP_MODEL);
 	material->set_material_var_flag(material_var_ignorez, ignorez);
@@ -38,6 +40,9 @@ void noarms(bool ignorez, bool wireframe, const color& rgba) {
 	interfaces::model_render->override_material(material);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const model_render_info_t& info, matrix_t* matrix)
 {
 	const auto mdl = info.model;
@@ -48,117 +53,86 @@ void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const mod
 	if (!mdl)
 		return;
 
-	bool is_player = strstr(mdl->name, "models/player") != nullptr;
+	bool is_player = strstr(mdl->name, "models/player") != nullptr; /* Check if model is player */
 
-	if (variables::chams == 1)
+	if (variables::chams == true) /* Chams run here */
 	{
-		if (is_player)
+		if (variables::chamsalways == true)
 		{
-			player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+			variables::chamsvisible == false; /* Saves cheat from having a stroke */
+			variables::chamsxqz == false;
 
-			if (!player || !player->is_alive() || player->dormant())
-				return;
-
-
-			if (player->team() != csgo::local_player->team())
+			if (is_player)
 			{
-				override_material(true, false, color(255, 0, 0, 255));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+				player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+
+				if (!player || !player->is_alive() || player->dormant())
+					return;
+
+
+				if (player->team() != csgo::local_player->team())
+				{
+					override_material(true, false, variables::chamcolor);
+					draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+				}
+
 			}
-
 		}
-	}
 
-	if (variables::chams == 2)
-	{
-		if (is_player)
+		if (variables::chamsxqz == true)
 		{
-			player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+			variables::chamsvisible == false; /* Saves cheat from having a stroke */
+			variables::chamsalways == false;
 
-			if (!player || !player->is_alive() || player->dormant())
-				return;
-
-			if (player->team() != csgo::local_player->team())
+			if (is_player)
 			{
-				override_material_gloss(true, false, color(255, 0, 0, 255));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+				player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+
+				if (!player || !player->is_alive() || player->dormant())
+					return;
+
+				if (player->team() != csgo::local_player->team())
+				{
+					override_material(true, false, color(255, 0, 0));
+					draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+					override_material(false, false, color(0, 0, 255));
+					draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+				}
+
 			}
-
 		}
-	}
 
-	if (variables::chams == 3)
-	{
-		if (is_player)
+		if (variables::chamsvisible == true)
 		{
-			player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+			variables::chamsalways == false; /* Saves cheat from having a stroke */
+			variables::chamsxqz == false;
 
-			if (!player || !player->is_alive() || player->dormant())
-				return;
-
-			if (player->team() != csgo::local_player->team())
+			if (is_player)
 			{
-				override_material(true, false, color(255, 0, 0));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
-				override_material(false, false, color(0, 0, 255));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+				player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
+
+				if (!player || !player->is_alive() || player->dormant())
+					return;
+
+				if (player->team() != csgo::local_player->team())
+				{
+					override_material(true, false, color(0, 0, 0, 0));
+					draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+					override_material(false, false, color(255, 0, 0));
+					draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
+				}
 			}
-
 		}
-	}
-
-	if (variables::chams == 4)
-	{
-		if (is_player)
-		{
-			player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
-
-			if (!player || !player->is_alive() || player->dormant())
-				return;
-
-			if (player->team() != csgo::local_player->team())
-			{
-				override_material(true, false, color(0, 0, 0, 0));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
-				override_material(false, false, color(255, 0, 0));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
-			}
-
-		}
-	}
-
-	if (variables::chams == 5)
-	{
-		if (is_player)
-		{
-			player_t* player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(info.entity_index));
-
-			if (!player || !player->is_alive() || player->dormant())
-				return;
-
-			if (player->team() != csgo::local_player->team())
-			{
-				override_material_crystal(true, false, color(50, 255, 255));
-				draw_model_execute_original(interfaces::model_render, 0, ctx, state, info, matrix);
-			}
-
-		}
-	}
-
-
-	if (variables::chams == 0)
-	{
 
 	}
 
-
-	if (variables::arms == 1)
+	if (variables::armschams == true) /* Chams for arms */
 	{
-		bool arms = strstr(mdl->name, "models/arms") != nullptr;
+		bool arms = strstr(mdl->name, "models/arms") != nullptr; /* Check model is arms */
 
 		if (arms)
 		{
-			if (csgo::local_player && csgo::local_player->is_alive())
+			if (csgo::local_player && csgo::local_player->is_alive())  /* Only overide localplayers arms */
 			{
 				override_material(true, false, color(255, 255, 255, 255));
 			}
@@ -166,9 +140,9 @@ void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const mod
 
 	}
 
-	if (variables::arms == 2)
+	if (variables::nohands == true) /* No hands, pretty self explanitory */
 	{
-		bool arms = strstr(mdl->name, "models/arms") != nullptr;
+		bool arms = strstr(mdl->name, "models/arms") != nullptr; /* Same thing arms chams does */
 
 		if (arms)
 		{
@@ -179,57 +153,4 @@ void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const mod
 		}
 
 	}
-
-	if (variables::arms == 3)
-	{
-		bool arms = strstr(mdl->name, "models/arms") != nullptr;
-
-		if (arms)
-		{
-			if (csgo::local_player && csgo::local_player->is_alive())
-			{
-				override_material_crystal(true, false, color(120, 255, 255, 255));
-			}
-		}
-
-	}
-
-	if (variables::arms == 4)
-	{
-		bool arms = strstr(mdl->name, "models/arms") != nullptr;
-		bool weapons = strstr(mdl->name, "models/weapons") != nullptr;
-		bool skins = strstr(mdl->name, "models/skins") != nullptr;
-
-		if (arms)
-		{
-			if (csgo::local_player && csgo::local_player->is_alive())
-			{
-				override_material_crystal(true, false, color(120, 255, 255, 255));
-			}
-		}
-
-		if (weapons)
-		{
-			if (csgo::local_player && csgo::local_player->is_alive())
-			{
-				override_material_crystal(true, false, color(120, 255, 255, 255));
-			}
-		}
-
-		if (skins)
-		{
-			if (csgo::local_player && csgo::local_player->is_alive())
-			{
-				override_material_crystal(true, false, color(120, 255, 255, 255));
-			}
-		}
-
-	}
-
-
-	if (variables::arms == 0)
-	{
-
-	}
-
 }

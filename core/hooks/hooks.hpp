@@ -26,4 +26,9 @@ namespace hooks {
 		void __fastcall hook(void* _this, int edx, i_mat_render_context* ctx, const draw_model_state_t& state, const model_render_info_t& pInfo, matrix_t* pCustomBoneToWorld);
 	}
 
+	namespace sv_cheats {
+		using fn = bool(__thiscall*)(void*);
+		bool __fastcall hook(PVOID convar, int edx);
+	}
+
 }

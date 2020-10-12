@@ -1,10 +1,15 @@
 #include "../features.hpp"
 
-void esp()
+void esp() /* I just draw all player esp in this function because why not */
 {
-	if (variables::espToggle == true && interfaces::engine->is_in_game())
+	if (!interfaces::engine->is_connected()) /* Saves you from crash sometimes... maybe? */
 	{
-		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
+		variables::espToggle == false;
+	}
+
+	if (variables::espToggle == true && interfaces::engine->is_in_game()) /* Where esp is getting drawn */
+	{
+		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++) /* Player loop */
 		{
 			auto pCSPlayer = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(iPlayer));
 			if (!pCSPlayer)
@@ -53,50 +58,67 @@ void esp()
 			int healthheight = (h * pCSPlayer->health()) / 100;
 			int armorheight = (h * pCSPlayer->armor()) / 100;
 
-			if (pCSPlayer->team() != csgo::local_player->team())
+
+			if (pCSPlayer->team() != csgo::local_player->team()) 
 			{
-				render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 15, render::fonts::watermark_font, playerinfo.name, true, color::white());
-
-				render::draw_rect(x, y, w, h, color::black());
-				render::draw_rect(x + 1, y + 1, w - 2, h - 2, color::white());
-
-				if (pCSPlayer->health() > 70)
+				if (variables::name == true) /* Name esp */
 				{
-					render::draw_rect(healthx, healthy, healthw, healthh, color::black());
-					render::draw_filled_rect(healthx + 1, healthy + 1, healthw - 2, healthheight - 2, color::green());
+					render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 15, render::fonts::watermark_font, playerinfo.name, true, color::white());
+				}
+				 
+				if (variables::box == true) /* Box esp */
+				{
+					render::draw_rect(x, y, w, h, color::black());
+					render::draw_rect(x + 1, y + 1, w - 2, h - 2, color::white());
 				}
 
-				if (pCSPlayer->health() < 70)
+				if (variables::healthbar) /* Health Bar esp */
 				{
-					render::draw_rect(healthx, healthy, healthw, healthh, color::black());
-					render::draw_filled_rect(healthx + 1, healthy + 1, healthw - 2, healthheight - 2, color(255, 165, 0));
+					if (pCSPlayer->health() > 70)
+					{
+						render::draw_rect(healthx, healthy, healthw, healthh, color::black());
+						render::draw_filled_rect(healthx + 1, healthy + 1, healthw - 2, healthheight - 2, color::green());
+					}
+
+					if (pCSPlayer->health() < 70)
+					{
+						render::draw_rect(healthx, healthy, healthw, healthh, color::black());
+						render::draw_filled_rect(healthx + 1, healthy + 1, healthw - 2, healthheight - 2, color(255, 165, 0));
+					}
+
+					if (pCSPlayer->health() < 35)
+					{
+						render::draw_rect(healthx, healthy, healthw, healthh, color::black());
+						render::draw_filled_rect(healthx + 1, healthy + 1, healthw - 2, healthheight - 2, color::red());
+					}
+
 				}
 
-				if (pCSPlayer->health() < 35)
+				if (variables::shieldbar == true) /* Armor Bar esp */
 				{
-					render::draw_rect(healthx, healthy, healthw, healthh, color::black());
-					render::draw_filled_rect(healthx + 1, healthy + 1, healthw - 2, healthheight - 2, color::red());
+					if (pCSPlayer->armor() > 0)
+					{
+						render::draw_rect(armorx, armory, armorw, armorh, color::black());
+						render::draw_filled_rect(armorx + 1, armory + 1, armorw - 1, armorheight - 2, color::blue());
+					}
 				}
 
-				if (pCSPlayer->armor() > 0)
-				{
-					render::draw_rect(armorx, armory, armorw, armorh, color::black());
-					render::draw_filled_rect(armorx + 1, armory + 1, armorw - 1, armorheight - 2, color::blue());
-				}
-
-				if (pCSPlayer->is_flashed())
+				if (pCSPlayer->is_flashed()) /* If target is flashed show flag */
 				{
 					render::draw_text_string(vecHeadScreen.x / -6, vecHeadScreen.y, render::fonts::watermark_font, "flashed", true, color(255, 255, 0));
 				}
+
+				/* Make more flags then esp is complete  */
+
 			}
 		}
 	}
 	else {}
 }
 
-void boneesp()
+void boneesp() /* Skeletons */
 {
-	if (variables::boneToggle == 1)
+	if (variables::bonevisible == true) /* Only draw if player is visible */
 	{
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
 		{
@@ -156,7 +178,7 @@ void boneesp()
 			}
 		}
 	}
-	if (variables::boneToggle == 2)
+	if (variables::bonealways == true) /* Draw bones always */
 	{
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
 		{
@@ -217,26 +239,26 @@ void boneesp()
 	else {}
 }
 
-void gernadepredict(c_usercmd* cmd)
+void gernadepredict(c_usercmd* cmd) /* Grenade prediction */
 {
-	if (variables::espToggle == true)
+	if (variables::espToggle == true) /* ??? Why did I ever do this... anyways I need to create a standalone variable for this */
 	{
 		if (WEAPONTYPE_GRENADE && cmd->buttons & in_attack || in_attack2)
 		{
-		
+
 		}
 	}
 }
 
-void bombesp()
+void bombesp() /* Bomb timer */
 {
-	if (variables::espToggle == true)
+	if (variables::espToggle == true) /* Make seperate variable */
 	{
 		for (int bomb = 0; bomb < interfaces::entity_list->get_highest_index(); bomb++)
 		{
 			auto entity = reinterpret_cast<entity_t*>(interfaces::entity_list->get_client_entity_handle(183));
 
-			if (entity->is_player() == false)
+			if (entity->is_player() == false) /* Don't do anything if localplayer */
 			{
 				vec3_t vecFoot;
 				vec2_t vecScreen;
@@ -249,12 +271,12 @@ void bombesp()
 				if (!(math::world_to_screen(vecFoot, vecHeadScreen)))
 					continue;
 
-				float bombTime = *(float*)((DWORD) + 0x2990);
+				float bombTime = *(float*)((DWORD)+0x2990); /* Maybe works??? */
 				float detonateTime = bombTime - interfaces::globals->interval_per_tick * csgo::local_player->get_tick_base();
 				std::string bombtimer = std::to_string(detonateTime);
 				render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y, render::fonts::watermark_font, bombtimer, true, color::white());
 			}
 		}
 	}
-	else{}
+	else {}
 }

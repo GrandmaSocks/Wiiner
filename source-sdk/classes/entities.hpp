@@ -388,6 +388,17 @@ public:
 		return origin() + view_offset();
 	}
 
+	void invalidate_bone_cache() {
+		static DWORD addr = (DWORD)utilities::pattern_scan("client.dll", "80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81");
+
+		*(int*)((uintptr_t)this + 0xA30) = interfaces::globals->frame_count; //we'll skip occlusion checks now
+		*(int*)((uintptr_t)this + 0xA28) = 0;//clear occlusion flags
+
+		unsigned long g_iModelBoneCounter = **(unsigned long**)(addr + 10);
+		*(unsigned int*)((DWORD)this + 0x2924) = 0xFF7FFFFF; // m_flLastBoneSetupTime = -FLT_MAX;
+		*(unsigned int*)((DWORD)this + 0x2690) = (g_iModelBoneCounter - 1); // m_iMostRecentModelBoneCounter = g_iModelBoneCounter - 1;
+	}
+
 	anim_state* get_anim_state() {
 		return *reinterpret_cast<anim_state * *>(this + 0x3914);
 	}
@@ -477,6 +488,28 @@ public:
 		else
 			return false;
 	}
+
+	bool in_smoke(player_t* entity)
+	{
+		auto local_player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player()));
+		trace_filter filter;
+		ray_t ray;
+		trace_t trace;
+		vec3_t start, end;
+		filter.skip = local_player;
+		start = local_player->origin() + local_player->view_offset();
+		end = entity->get_eye_pos();
+		ray.initialize(start, end);
+
+		// cast ray
+		interfaces::trace_ray->trace_ray(ray, MASK_OPAQUE_AND_NPCS, &filter, &trace);
+
+		if (trace.entity == entity || trace.flFraction > .97f)
+			return true;
+		else
+			return false;
+	}
+
 
 	void update_client_side_animations() {
 		using original_fn = void(__thiscall*)(void*);

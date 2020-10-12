@@ -18,7 +18,7 @@ void boneesp();
 
 void aimbot(c_usercmd* cmd);
 
-void hvhmode(c_usercmd* cmd);
+void hvhmode(c_usercmd* cmd, player_t* entity);
 
 void bombesp();
 
@@ -33,3 +33,7 @@ void clantag();
 void crosshair();
 
 void antiaim(c_usercmd* cmd);
+
+void Fov();
+
+void log(c_usercmd* cmd);

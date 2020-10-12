@@ -147,6 +147,7 @@ namespace offsets
 	constexpr ::std::ptrdiff_t m_pitchClassPtr = 0x5184208;
 	constexpr ::std::ptrdiff_t m_yawClassPtr = 0xD40460;
 	constexpr ::std::ptrdiff_t model_ambient_min = 0x58CE4C;
-	constexpr ::std::ptrdiff_t set_abs_angles = 0x1D43E0;
+	constexpr ::std::ptrdiff_t set_abs_
+		= 0x1D43E0;
 	constexpr ::std::ptrdiff_t set_abs_origin = 0x1D4220;
 }
