@@ -2,7 +2,7 @@
 
 void rcs(c_usercmd* cmd)
 {
-	if (variables::rcs == true)
+	if (variables::aimbots::legit::rcs == true)
 	{
 		vec3_t punchAngle = csgo::local_player->aim_punch_angle() * 2;
 
@@ -16,6 +16,5 @@ void rcs(c_usercmd* cmd)
 			cmd->viewangles.normalize();
 		}
 	}
-
 	else {}
 }

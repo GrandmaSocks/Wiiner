@@ -70,12 +70,13 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 	rcs(cmd);
 	aimbot(cmd);
 	clantag();
-
+	ragebot(cmd);
+	triggerbot(cmd);
+	
 	player_t* entity;
 
-	hvhmode(cmd, entity);
 	antiaim(cmd);
-
+	
 	prediction::start(cmd); {
 
 		
@@ -92,9 +93,7 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 	cmd->viewangles.x = std::clamp(cmd->viewangles.x, -89.0f, 89.0f);
 	cmd->viewangles.y = std::clamp(cmd->viewangles.y, -180.0f, 180.0f);
 	cmd->viewangles.z = 0.0f;
-
-
-
+	
 	return false;
 }
 
@@ -106,13 +105,15 @@ void __stdcall hooks::paint_traverse::hook(unsigned int panel, bool force_repain
 
 		render::draw_text_string(20, 20, render::fonts::tabfont, "Debug", false, color(255, 255, 0));
 
-		menu::toggle();
-		menu::render();;
 		antiflash();
 		esp();
 		boneesp();
 		crosshair();
+		watermark();
+		menu::toggle();
+ 		menu::render();;
 
+		
 		break;
 
 	case fnv::hash("FocusOverlayPanel"):

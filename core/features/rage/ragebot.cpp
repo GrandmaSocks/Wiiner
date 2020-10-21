@@ -1,24 +1,5 @@
 ﻿#include "../features.hpp"
 
-/*
-
-TO-DO
---------------------------------
-* Make it so if your viewangles are down you aren't acutally looking down
-
-* Create Ragebot and Resolver
-	- Autowall
-	- Hitchance and Min Damage
-	- Auto shoot
-
-* Add fakelag
-
-* Idea for antiaim (switch)
-	- have LBY shift around from two values
-
-
-*/
-
 void log() /* Log debug info */
 {
 	/*	if (interfaces::engine->is_in_game() == true)
@@ -140,91 +121,580 @@ player_t* rage_lowest_health(c_usercmd* user_cmd) /* Target with lowest health *
 	return best_entity;
 }
 
+void resolver(c_usercmd* cmd)
+{
+	
+}
+
 void ragebot(c_usercmd* user_cmd) /* Rage aimbot needs much improvment, list of things to do is down below */
 {
-	if (variables::ragebot == true)
+	
+	const auto weapon_type = csgo::local_player->active_weapon()->get_weapon_data()->weapon_type;
+	const auto weapon = csgo::local_player->active_weapon()->get_weapon_data()->weapon_type_name;
+
+	if (weapon_type == WEAPONTYPE_PISTOL)
 	{
-		variables::aimbotToggle == false; /* If ragebot is on disable legitbot or else it messed everything up */
-
-		srand(time(0));
-		int random = rand() % 5 + 1; /* Should just call the already made random function  */
-
-		if (!csgo::local_player->is_alive())
-			return;
-
-		const auto weapon_type = csgo::local_player->active_weapon()->get_weapon_data()->weapon_type;
-		const auto weapon = csgo::local_player->active_weapon()->get_weapon_data()->weapon_type_name; /* Dosen't Work */
-		if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-			return;
-
-		player_t* entity = nullptr;
-		int bone = 0;
-
-		if (variables::ctarget == true) /* Get Target | Configible */
+		if (variables::aimbots::rage::pistols::ragebot == true)
 		{
-			entity = rage_closest_to_crosshair(user_cmd);
-		}
 
-		if (variables::chealth == true) /* Get Target | Configible */
-		{
-			entity = rage_lowest_health(user_cmd);
-		}
+			if (!csgo::local_player->is_alive())
+				return;
 
-		if (variables::cdistance == true) /* Get Target | Configible */
-		{
-			entity = rage_closest_distance(user_cmd);
-		}
+			if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+				return;
 
+			ray_t ray;
+			trace_filter filter;
+			trace_t trace;
+			vec3_t start, end, forward;
 
-		if (!entity)  
-			return;
+			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-		bone = 7; /* Inital bone is head but gets changed by some statments later */
+			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+			start = csgo::local_player->get_eye_pos();
+			end = start + forward;
+			filter.skip = csgo::local_player;
+			ray.initialize(start, end);
 
-		if (entity->health() < 50) /* If targets health is below 50 baim them*/
-		{
-			bone = 5;
-		}
+			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
 
-		if (weapon_type == WEAPON_AWP) /* Dosen't work but useful, if you have awp baim target */
-		{
-			bone = 6;
-		}
+			auto player = trace.entity;
+			if (!player)
+				return;
 
-		if (weapon_type == WEAPONTYPE_RIFLE || weapon_type == WEAPONTYPE_SUBMACHINEGUN) /* If you got a high spread weapon just baim */
-		{
-			if (csgo::local_player->active_weapon()->clip1_count() < 15)
+			if (player->client_class()->class_id != ccsplayer)
+				return;
+
+			if (trace.entity->team() == csgo::local_player->team())
+				return;
+			
+			resolver(user_cmd);
+			
+			player_t* entity = nullptr;
+			int bone = 0;
+
+			if (variables::aimbots::rage::pistols::ctarget == true) /* Get Target | Configible */
 			{
-				bone = 4;
+				entity = rage_closest_to_crosshair(user_cmd);
 			}
-			bone = 6;
+
+			if (variables::aimbots::rage::pistols::chealth == true) /* Get Target | Configible */
+			{
+				entity = rage_lowest_health(user_cmd);
+			}
+
+			if (variables::aimbots::rage::pistols::cdistance == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_distance(user_cmd);
+			}
+
+			if (!entity)
+				return;
+
+			if (variables::aimbots::rage::pistols::head == true && trace.hitbox == hitgroup_head || variables::aimbots::rage::pistols::head == true && trace.hitbox == 7)
+			{
+				bone = 8;
+			}
+
+			if (variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_chest || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 6 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 5 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_leftarm || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_rightarm)
+			{
+				bone = hitgroup_chest;
+			}
+
+			if (variables::aimbots::rage::pistols::stomach == true && trace.hitbox == hitgroup_stomach)
+			{
+				bone = hitgroup_stomach;
+			}
+
+			if (variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 77 || variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 70)
+			{
+				bone = 70;
+			}
+
+			if (variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_leftleg || variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_rightleg)
+			{
+				srand(time(0));
+				int bonerand = rand() % 2 + 1;
+				
+				if (bonerand = 1)
+				{
+					bone = hitgroup_leftleg;
+				}
+				else
+				{
+					bone = hitgroup_rightleg;
+				}		
+			}
+			
+			auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+			angle.clamp();
+
+			angle = math::normalize(angle);
+
+			user_cmd->viewangles += angle;
+
+			float hitchance = 1 / csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+
+			float flServerTime = csgo::local_player->get_tick_base() * interfaces::globals->interval_per_tick;
+
+			bool canShoot = (csgo::local_player->active_weapon()->next_primary_attack() <= flServerTime && csgo::local_player->active_weapon()->clip1_count() > 0);
+
+			/* Aimbot Shoot Logic Here */
 		}
+	}
 
-		auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+	if (weapon == "weapon_revolver" || weapon == "weapon_deagle")
+	{
+		if (variables::aimbots::rage::h_pistols::ragebot == true)
+		{
+			if (!csgo::local_player->is_alive())
+				return;
 
-		angle.clamp();
+			if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+				return;
 
-		angle = math::normalize(angle);
+			ray_t ray;
+			trace_filter filter;
+			trace_t trace;
+			vec3_t start, end, forward;
 
-		user_cmd->viewangles += angle;
+			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-		float hitchance = 1 / csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+			start = csgo::local_player->get_eye_pos();
+			end = start + forward;
+			filter.skip = csgo::local_player;
+			ray.initialize(start, end);
 
-		float flServerTime = csgo::local_player->get_tick_base() * interfaces::globals->interval_per_tick;
+			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
 
-		bool canShoot = (csgo::local_player->active_weapon()->next_primary_attack() <= flServerTime && csgo::local_player->active_weapon()->clip1_count() > 0);
+			auto player = trace.entity;
+			if (!player)
+				return;
 
-		std::string hitchancelog = std::to_string(hitchance);
+			if (player->client_class()->class_id != ccsplayer)
+				return;
 
-		/* Add hitchance, add multipoint, add safepoint, add min dmg, add hitgroups { Copy the ones from the legit bot when thats done} */
+			if (trace.entity->team() == csgo::local_player->team())
+				return;
+			
+			resolver(user_cmd);
+			
+			player_t* entity = nullptr;
+			int bone = 0;
+			
+			if (variables::aimbots::rage::h_pistols::ctarget == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_to_crosshair(user_cmd);
+			}
 
+			if (variables::aimbots::rage::h_pistols::chealth == true) /* Get Target | Configible */
+			{
+				entity = rage_lowest_health(user_cmd);
+			}
+
+			if (variables::aimbots::rage::h_pistols::cdistance == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_distance(user_cmd);
+			}
+
+			if (!entity)
+				return;
+
+			if (variables::aimbots::rage::pistols::head == true && trace.hitbox == hitgroup_head || variables::aimbots::rage::pistols::head == true && trace.hitbox == 7)
+			{
+				bone = 8;
+			}
+
+			if (variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_chest || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 6 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 5 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_leftarm || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_rightarm)
+			{
+				bone = hitgroup_chest;
+			}
+
+			if (variables::aimbots::rage::pistols::stomach == true && trace.hitbox == hitgroup_stomach)
+			{
+				bone = hitgroup_stomach;
+			}
+
+			if (variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 77 || variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 70)
+			{
+				bone = 70;
+			}
+
+			if (variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_leftleg || variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_rightleg)
+			{
+				srand(time(0));
+				int bonerand = rand() % 2 + 1;
+
+				if (bonerand = 1)
+				{
+					bone = hitgroup_leftleg;
+				}
+				else
+				{
+					bone = hitgroup_rightleg;
+				}
+			}
+
+			auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+			angle.clamp();
+
+			angle = math::normalize(angle);
+
+			user_cmd->viewangles += angle;
+
+			float hitchance = 1 / csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+
+			float flServerTime = csgo::local_player->get_tick_base() * interfaces::globals->interval_per_tick;
+
+			bool canShoot = (csgo::local_player->active_weapon()->next_primary_attack() <= flServerTime && csgo::local_player->active_weapon()->clip1_count() > 0);
+
+			/* Aimbot Shoot Logic Here */
+		}
+	}
+
+	if (weapon == "weapon_ssg08")
+	{
+		if (variables::aimbots::rage::scout::ragebot == true)
+		{
+			if (!csgo::local_player->is_alive())
+				return;
+
+			if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+				return;
+
+			ray_t ray;
+			trace_filter filter;
+			trace_t trace;
+			vec3_t start, end, forward;
+
+			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+
+			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+			start = csgo::local_player->get_eye_pos();
+			end = start + forward;
+			filter.skip = csgo::local_player;
+			ray.initialize(start, end);
+
+			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+			auto player = trace.entity;
+			if (!player)
+				return;
+
+			if (player->client_class()->class_id != ccsplayer)
+				return;
+
+			if (trace.entity->team() == csgo::local_player->team())
+				return;
+			
+			resolver(user_cmd);
+			
+			player_t* entity = nullptr;
+			int bone = 0;
+
+			if (variables::aimbots::rage::scout::ctarget == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_to_crosshair(user_cmd);
+			}
+
+			if (variables::aimbots::rage::scout::chealth == true) /* Get Target | Configible */
+			{
+				entity = rage_lowest_health(user_cmd);
+			}
+
+			if (variables::aimbots::rage::scout::cdistance == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_distance(user_cmd);
+			}
+
+			if (!entity)
+				return;
+
+			if (variables::aimbots::rage::pistols::head == true && trace.hitbox == hitgroup_head || variables::aimbots::rage::pistols::head == true && trace.hitbox == 7)
+			{
+				bone = 8;
+			}
+
+			if (variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_chest || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 6 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 5 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_leftarm || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_rightarm)
+			{
+				bone = hitgroup_chest;
+			}
+
+			if (variables::aimbots::rage::pistols::stomach == true && trace.hitbox == hitgroup_stomach)
+			{
+				bone = hitgroup_stomach;
+			}
+
+			if (variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 77 || variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 70)
+			{
+				bone = 70;
+			}
+
+			if (variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_leftleg || variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_rightleg)
+			{
+				srand(time(0));
+				int bonerand = rand() % 2 + 1;
+
+				if (bonerand = 1)
+				{
+					bone = hitgroup_leftleg;
+				}
+				else
+				{
+					bone = hitgroup_rightleg;
+				}
+			}
+
+			auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+			angle.clamp();
+
+			angle = math::normalize(angle);
+
+			user_cmd->viewangles += angle;
+
+			float hitchance = 1 / csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+
+			float flServerTime = csgo::local_player->get_tick_base() * interfaces::globals->interval_per_tick;
+
+			bool canShoot = (csgo::local_player->active_weapon()->next_primary_attack() <= flServerTime && csgo::local_player->active_weapon()->clip1_count() > 0);
+
+			/* Aimbot Shoot Logic Here */
+		}
+	}
+
+	if (weapon == "weapon_gs3sg1" || weapon == "weapon_scar20")
+	{
+		if (variables::aimbots::rage::autos::ragebot == true)
+		{
+			if (!csgo::local_player->is_alive())
+				return;
+
+			if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+				return;
+
+			ray_t ray;
+			trace_filter filter;
+			trace_t trace;
+			vec3_t start, end, forward;
+
+			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+
+			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+			start = csgo::local_player->get_eye_pos();
+			end = start + forward;
+			filter.skip = csgo::local_player;
+			ray.initialize(start, end);
+
+			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+			auto player = trace.entity;
+			if (!player)
+				return;
+
+			if (player->client_class()->class_id != ccsplayer)
+				return;
+
+			if (trace.entity->team() == csgo::local_player->team())
+				return;
+			
+			resolver(user_cmd);
+			
+			player_t* entity = nullptr;
+			int bone = 0;
+			
+			if (variables::aimbots::rage::autos::ctarget == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_to_crosshair(user_cmd);
+			}
+
+			if (variables::aimbots::rage::autos::chealth == true) /* Get Target | Configible */
+			{
+				entity = rage_lowest_health(user_cmd);
+			}
+
+			if (variables::aimbots::rage::autos::cdistance == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_distance(user_cmd);
+			}
+
+			if (!entity)
+				return;
+
+			if (variables::aimbots::rage::pistols::head == true && trace.hitbox == hitgroup_head || variables::aimbots::rage::pistols::head == true && trace.hitbox == 7)
+			{
+				bone = 8;
+			}
+
+			if (variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_chest || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 6 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 5 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_leftarm || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_rightarm)
+			{
+				bone = hitgroup_chest;
+			}
+
+			if (variables::aimbots::rage::pistols::stomach == true && trace.hitbox == hitgroup_stomach)
+			{
+				bone = hitgroup_stomach;
+			}
+
+			if (variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 77 || variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 70)
+			{
+				bone = 70;
+			}
+
+			if (variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_leftleg || variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_rightleg)
+			{
+				srand(time(0));
+				int bonerand = rand() % 2 + 1;
+
+				if (bonerand = 1)
+				{
+					bone = hitgroup_leftleg;
+				}
+				else
+				{
+					bone = hitgroup_rightleg;
+				}
+			}
+			
+			auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+			angle.clamp();
+
+			angle = math::normalize(angle);
+
+			user_cmd->viewangles += angle;
+
+			float hitchance = 1 / csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+
+			float flServerTime = csgo::local_player->get_tick_base() * interfaces::globals->interval_per_tick;
+
+			bool canShoot = (csgo::local_player->active_weapon()->next_primary_attack() <= flServerTime && csgo::local_player->active_weapon()->clip1_count() > 0);
+
+			/* Aimbot Shoot Logic Here */
+		}
+	}
+
+	
+	if (weapon == "weapon_awp")
+	{
+		if (variables::aimbots::rage::awp::ragebot == true)
+		{
+			if (!csgo::local_player->is_alive())
+				return;
+
+			if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+				return;
+
+			ray_t ray;
+			trace_filter filter;
+			trace_t trace;
+			vec3_t start, end, forward;
+
+			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+
+			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+			start = csgo::local_player->get_eye_pos();
+			end = start + forward;
+			filter.skip = csgo::local_player;
+			ray.initialize(start, end);
+
+			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+			auto player = trace.entity;
+			if (!player)
+				return;
+
+			if (player->client_class()->class_id != ccsplayer)
+				return;
+
+			if (trace.entity->team() == csgo::local_player->team())
+				return;
+			
+			resolver(user_cmd);
+			
+			player_t* entity = nullptr;
+			int bone = 0;
+			
+			if (variables::aimbots::rage::awp::ctarget == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_to_crosshair(user_cmd);
+			}
+
+			if (variables::aimbots::rage::awp::chealth == true) /* Get Target | Configible */
+			{
+				entity = rage_lowest_health(user_cmd);
+			}
+
+			if (variables::aimbots::rage::awp::cdistance == true) /* Get Target | Configible */
+			{
+				entity = rage_closest_distance(user_cmd);
+			}
+
+			if (!entity)
+				return;
+
+			if (variables::aimbots::rage::pistols::head == true && trace.hitbox == hitgroup_head || variables::aimbots::rage::pistols::head == true && trace.hitbox == 7)
+			{
+				bone = 8;
+			}
+
+			if (variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_chest || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 6 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == 5 || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_leftarm || variables::aimbots::rage::pistols::chest == true && trace.hitbox == hitgroup_rightarm)
+			{
+				bone = hitgroup_chest;
+			}
+
+			if (variables::aimbots::rage::pistols::stomach == true && trace.hitbox == hitgroup_stomach)
+			{
+				bone = hitgroup_stomach;
+			}
+
+			if (variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 77 || variables::aimbots::rage::pistols::pelvis == true && trace.hitbox == 70)
+			{
+				bone = 70;
+			}
+
+			if (variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_leftleg || variables::aimbots::rage::pistols::legs == true && trace.hitbox == hitgroup_rightleg)
+			{
+				srand(time(0));
+				int bonerand = rand() % 2 + 1;
+
+				if (bonerand = 1)
+				{
+					bone = hitgroup_leftleg;
+				}
+				else
+				{
+					bone = hitgroup_rightleg;
+				}
+			}
+			
+			auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+			angle.clamp();
+
+			angle = math::normalize(angle);
+
+			user_cmd->viewangles += angle;
+
+			float hitchance = 1 / csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+
+			float flServerTime = csgo::local_player->get_tick_base() * interfaces::globals->interval_per_tick;
+
+			bool canShoot = (csgo::local_player->active_weapon()->next_primary_attack() <= flServerTime && csgo::local_player->active_weapon()->clip1_count() > 0);
+
+			/* Aimbot Shoot Logic Here */
+			
+		}
 	}
 }
 
 void antiaim(c_usercmd* cmd) /* Antiaim(s) still working on it. Need a fix so you don't look at the floor (: */
 {
 
-	if (variables::airstuck == true)
+	if (variables::misc::airstuck == true) /* When I make keybind thing make this on key */
 	{
 		cmd->tick_count = INT_MAX; /* Stupid exploit */
 		cmd->command_number = INT_MAX;									
@@ -273,9 +743,9 @@ void antiaim(c_usercmd* cmd) /* Antiaim(s) still working on it. Need a fix so yo
 				cmd->viewangles.y += 180.f;
 			}
 			else {
-				cmd->viewangles.y += 180.f;// - g_plocal->getmaxdesyncdelta(); works too
+				cmd->viewangles.y += 180.f;
 			}
-			//while testing on hvh i noticed than you are slowwalking desync works perefectly, so lets do a little movement while standing
+
 			if (csgo::local_player->flags() & fl_onground && cmd->sidemove < 3 && cmd->sidemove > -3) {
 				static bool switch_ = false;
 				if (switch_)
@@ -353,15 +823,4 @@ bool autowall(player_t* entity) /* Shoot valid targets through walls */
 		FINISHED  5. is the guy wearing armor
 	*/
 	return true;
-}
-
-void hvhmode(c_usercmd* cmd, player_t* entity) /* I think this is useless with the menu update but haven't deleted it */
-{
-	if (variables::hvhmode == true)
-	{
-		variables::aimbotToggle = 0;
-		ragebot(cmd);
-		//movementFix(cmd, oAngle, oldForward, oldSide);
-		//autowall(entity);
-	}
 }

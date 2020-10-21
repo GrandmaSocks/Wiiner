@@ -27,7 +27,7 @@ public:
 	void run(c_usercmd*) noexcept;
 	static void init() {
 		records->clear();
-
+		
 		cvars.update_rate = interfaces::console->get_convar("cl_updaterate");
 		cvars.max_update_rate = interfaces::console->get_convar("sv_maxupdaterate");
 		cvars.interp = interfaces::console->get_convar("cl_interp");

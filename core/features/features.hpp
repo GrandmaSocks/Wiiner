@@ -18,8 +18,6 @@ void boneesp();
 
 void aimbot(c_usercmd* cmd);
 
-void hvhmode(c_usercmd* cmd, player_t* entity);
-
 void bombesp();
 
 void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const model_render_info_t& info, matrix_t* matrix);
@@ -37,3 +35,27 @@ void antiaim(c_usercmd* cmd);
 void Fov();
 
 void log(c_usercmd* cmd);
+
+void ragebot(c_usercmd* user_cmd);
+
+void watermark();
+
+void triggerbot(c_usercmd* cmd);
+
+namespace cfg
+{
+	void run(const char* name);
+
+	void load(size_t id);
+
+	void save(size_t id);
+
+	bool add(const char* name);
+
+	void remove(size_t id);
+
+	void rename(size_t item, const char* newName);
+
+	void reset();
+	
+}

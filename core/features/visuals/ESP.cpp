@@ -2,12 +2,7 @@
 
 void esp() /* I just draw all player esp in this function because why not */
 {
-	if (!interfaces::engine->is_connected()) /* Saves you from crash sometimes... maybe? */
-	{
-		variables::espToggle == false;
-	}
-
-	if (variables::espToggle == true && interfaces::engine->is_in_game()) /* Where esp is getting drawn */
+	if (variables::Visuals::esp::espToggle == true && interfaces::engine->is_in_game()) /* Where esp is getting drawn */
 	{
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++) /* Player loop */
 		{
@@ -53,7 +48,7 @@ void esp() /* I just draw all player esp in this function because why not */
 			int armorh = vecScreen.y - vecHeadScreen.y;
 			int armorw = 4;
 			int armory = vecHeadScreen.y;
-			int armorx = vecHeadScreen.x - (h / 4 + 9.5);
+			int armorx = vecHeadScreen.x - (h / 4 + 11);
 
 			int healthheight = (h * pCSPlayer->health()) / 100;
 			int armorheight = (h * pCSPlayer->armor()) / 100;
@@ -61,18 +56,18 @@ void esp() /* I just draw all player esp in this function because why not */
 
 			if (pCSPlayer->team() != csgo::local_player->team()) 
 			{
-				if (variables::name == true) /* Name esp */
+				if (variables::Visuals::esp::name == true) /* Name esp */
 				{
 					render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 15, render::fonts::watermark_font, playerinfo.name, true, color::white());
 				}
 				 
-				if (variables::box == true) /* Box esp */
+				if (variables::Visuals::esp::box == true) /* Box esp */
 				{
 					render::draw_rect(x, y, w, h, color::black());
 					render::draw_rect(x + 1, y + 1, w - 2, h - 2, color::white());
 				}
 
-				if (variables::healthbar) /* Health Bar esp */
+				if (variables::Visuals::esp::healthbar) /* Health Bar esp */
 				{
 					if (pCSPlayer->health() > 70)
 					{
@@ -94,7 +89,7 @@ void esp() /* I just draw all player esp in this function because why not */
 
 				}
 
-				if (variables::shieldbar == true) /* Armor Bar esp */
+				if (variables::Visuals::esp::shieldbar == true) /* Armor Bar esp */
 				{
 					if (pCSPlayer->armor() > 0)
 					{
@@ -103,7 +98,16 @@ void esp() /* I just draw all player esp in this function because why not */
 					}
 				}
 
-				if (pCSPlayer->is_flashed()) /* If target is flashed show flag */
+				if (variables::Visuals::esp::weaponesp == true) /* Weapon name esp */
+				{
+					if (pCSPlayer->is_alive() == true)
+					{
+						std::string wep = pCSPlayer->active_weapon()->get_weapon_data()->weapon_name_alt;
+						render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 25, render::fonts::watermark_font, wep, true, color(255,255,0));
+					}
+				}
+
+				if (pCSPlayer->is_flashed() == true) /* If target is flashed show flag */
 				{
 					render::draw_text_string(vecHeadScreen.x / -6, vecHeadScreen.y, render::fonts::watermark_font, "flashed", true, color(255, 255, 0));
 				}
@@ -118,8 +122,9 @@ void esp() /* I just draw all player esp in this function because why not */
 
 void boneesp() /* Skeletons */
 {
-	if (variables::bonevisible == true) /* Only draw if player is visible */
+	if (variables::Visuals::esp::bonevisible == true) /* Only draw if player is visible */
 	{
+		variables::Visuals::esp::bonealways == false;
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
 		{
 			auto pCSPlayer = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(iPlayer));
@@ -178,8 +183,9 @@ void boneesp() /* Skeletons */
 			}
 		}
 	}
-	if (variables::bonealways == true) /* Draw bones always */
+	if (variables::Visuals::esp::bonealways == true) /* Draw bones always */
 	{
+		variables::Visuals::esp::bonevisible == false;
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
 		{
 			auto pCSPlayer = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(iPlayer));
@@ -241,7 +247,7 @@ void boneesp() /* Skeletons */
 
 void gernadepredict(c_usercmd* cmd) /* Grenade prediction */
 {
-	if (variables::espToggle == true) /* ??? Why did I ever do this... anyways I need to create a standalone variable for this */
+	if (variables::Visuals::esp::espToggle == true) /* ??? Why did I ever do this... anyways I need to create a standalone variable for this */
 	{
 		if (WEAPONTYPE_GRENADE && cmd->buttons & in_attack || in_attack2)
 		{
@@ -252,7 +258,7 @@ void gernadepredict(c_usercmd* cmd) /* Grenade prediction */
 
 void bombesp() /* Bomb timer */
 {
-	if (variables::espToggle == true) /* Make seperate variable */
+	if (variables::Visuals::esp::espToggle == true) /* Make seperate variable */
 	{
 		for (int bomb = 0; bomb < interfaces::entity_list->get_highest_index(); bomb++)
 		{
