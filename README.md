@@ -1,6 +1,6 @@
 # Wiiner
 
-<b> CSGO Cheat developed using @designer1337 incrediable base </b>
+<b> CSGO Cheat developed using @designer1337 incredible base </b>
 
 <b> <h2> Features </h2> </b>
 
