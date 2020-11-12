@@ -2,11 +2,42 @@
 #include "../../dependencies/utilities/csgo.hpp"
 #include "../variables.hpp"
 
+char* HitgroupToName(int hitgroup)
+{
+	switch (hitgroup)
+	{
+	case hitgroup_head:
+		return "head";
+	case hitgroup_leftleg:
+		return "left leg";
+	case hitgroup_rightleg:
+		return "right leg";
+	case hitgroup_stomach:
+		return "stomach";
+	default:
+		return "body";
+	}
+}
+
 namespace misc {
 	namespace movement {
 		void bunny_hop(c_usercmd* cmd);
 	};
 }
+
+class WRAGEBOT
+{
+public:
+	static void ragebot(c_usercmd* cmd);
+	static void antiaim(c_usercmd* cmd);
+	static void autowall(c_usercmd* cmd);
+	static void safepoint(c_usercmd* cmd);
+	static void hitchance(c_usercmd* cmd);
+	static void mindmg(c_usercmd* cmd);
+	static void fixpvs();
+};
+
+void hitlogs(i_game_event* event);
 
 void antiflash();
 
@@ -41,6 +72,10 @@ void ragebot(c_usercmd* user_cmd);
 void watermark();
 
 void triggerbot(c_usercmd* cmd);
+
+void knifehandFlip();
+
+void spreadxhair();
 
 namespace cfg
 {

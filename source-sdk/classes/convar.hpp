@@ -55,19 +55,27 @@ class convar {
 public:
 	void set_value(const char* value) {
 		using original_fn = void(__thiscall*)(convar*, const char*);
-		return (*(original_fn * *)this)[14](this, value);
+		return (*(original_fn**)this)[14](this, value);
 	}
 	void set_value(float value) {
 		using original_fn = void(__thiscall*)(convar*, float);
-		return (*(original_fn * *)this)[15](this, value);
+		return (*(original_fn**)this)[15](this, value);
 	}
 	void set_value(int value) {
 		using original_fn = void(__thiscall*)(convar*, int);
-		return (*(original_fn * *)this)[16](this, value);
+		return (*(original_fn**)this)[16](this, value);
 	}
 	void set_value(bool value) {
 		using original_fn = void(__thiscall*)(convar*, int);
-		return (*(original_fn * *)this)[16](this, static_cast<int>(value));
+		return (*(original_fn**)this)[16](this, static_cast<int>(value));
+	}
+
+	float get_float() {
+		return utilities::call_virtual<float(__thiscall*)(decltype(this)) >(this, 12)(this);
+	}
+
+	float get_int() {
+		return utilities::call_virtual<int(__thiscall*)(decltype(this)) >(this, 13)(this);
 	}
 
 private:

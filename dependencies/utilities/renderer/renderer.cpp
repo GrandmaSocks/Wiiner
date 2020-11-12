@@ -1,12 +1,38 @@
 #include "renderer.hpp"
 
 unsigned long render::fonts::watermark_font;
+unsigned long render::fonts::menufont;
+unsigned long render::fonts::menucontent;
+unsigned long render::fonts::Sweaponicons;
+unsigned long render::fonts::espfont;
+unsigned long render::fonts::tabicons;
+unsigned long render::fonts::headerfont;
+unsigned long render::fonts::bodyfont;
 
 void render::initialize() {
 	render::fonts::watermark_font = interfaces::surface->font_create();
+	render::fonts::menucontent = interfaces::surface->font_create();
+	render::fonts::Sweaponicons = interfaces::surface->font_create();
+	render::fonts::espfont = interfaces::surface->font_create();
+	render::fonts::tabicons = interfaces::surface->font_create();
+	render::fonts::headerfont = interfaces::surface->font_create();
+	render::fonts::bodyfont = interfaces::surface->font_create();
 
-	interfaces::surface->set_font_glyph(render::fonts::watermark_font, "Tahoma", 12, 500, 0, 0, font_flags::fontflag_dropshadow);
+	
+	interfaces::surface->set_font_glyph(render::fonts::watermark_font, "Segoe UI", 16, 500, 0, 0, font_flags::fontflag_outline);
 
+	interfaces::surface->set_font_glyph(render::fonts::menucontent, "Segoe UI", 18, 1000, 0, 0, font_flags::fontflag_antialias);
+
+	interfaces::surface->set_font_glyph(render::fonts::Sweaponicons, "AstriumWep", 35, 1200, 0, 0, font_flags::fontflag_none);
+
+	interfaces::surface->set_font_glyph(render::fonts::espfont, "Tahoma", 13, 1200, 0, 0, font_flags::fontflag_outline);
+	
+	interfaces::surface->set_font_glyph(render::fonts::tabicons, "untitled-font-1", 20, 0, 0, 0, font_flags::fontflag_outline);
+
+	interfaces::surface->set_font_glyph(render::fonts::headerfont, "Roboto Mono", 22, 1000, 0, 0, font_flags::fontflag_antialias);
+
+	interfaces::surface->set_font_glyph(render::fonts::bodyfont, "Roboto Mono", 21, 0, 0, 0, font_flags::fontflag_antialias);
+	
 	console::log("[setup] render initialized!\n");
 }
 

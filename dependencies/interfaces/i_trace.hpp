@@ -8,7 +8,7 @@ class player_t;
 #define	SURF_WARP		0x0008		// turbulent water warp
 #define	SURF_TRANS		0x0010
 #define SURF_NOPORTAL	0x0020	// the surface can not have a portal placed on it
-#define	SURF_TRIGGER	0x0040	// FIXME: This is an xbox hack to work around elimination of trigger surfaces, which breaks occluders
+#define	SURF_TRIGGER	0x0040	//  This is an xbox hack to work around elimination of trigger surfaces, which breaks occluders
 #define	SURF_NODRAW		0x0080	// don't bother referencing the texture
 #define	SURF_HINT		0x0100	// make a primary bsp splitter
 #define	SURF_SKIP		0x0200	// completely ignore, allowing non-closed brushes

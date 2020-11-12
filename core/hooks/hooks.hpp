@@ -31,4 +31,9 @@ namespace hooks {
 		bool __fastcall hook(PVOID convar, int edx);
 	}
 
+	namespace viewmodelfov {
+		using fn = float(__thiscall*)(void*);
+		float __fastcall hook(PVOID convar);
+	}
+
 }

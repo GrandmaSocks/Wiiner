@@ -117,14 +117,15 @@ void antiflash()
 
 void thirdperson()
 {
-	static bool in_thirdperson = false;
 
 	if (GetAsyncKeyState(VK_MBUTTON) & 1)
-		in_thirdperson = !in_thirdperson;
+		variables::misc::thirdperson = !variables::misc::thirdperson;
 
-	if (interfaces::input->camera_in_third_person = in_thirdperson)
+	if (interfaces::input->camera_in_third_person = variables::misc::thirdperson)
+	{
 		interfaces::input->camera_offset.z = 100;
-	interfaces::input->camera_offset.x = 0;
+		interfaces::input->camera_offset.x = 0;
+	}
 }
 
 void set_clantag(std::string clantag)
@@ -140,7 +141,7 @@ void clantag()
 		static float last_change = 0.f;
 		if (interfaces::globals->realtime - last_change >= 0.25f) {
 			std::string clantag = "";
-			switch (int(interfaces::globals->cur_time * 4.f) % 31) { //add latency for better sync
+			switch (int(interfaces::globals->cur_time * 4.f) % 38) { //add latency for better sync
 			case 0:  clantag = "               "; break;
 			case 1:  clantag = "              W"; break;
 			case 2:  clantag = "             Wi"; break;
@@ -154,11 +155,14 @@ void clantag()
 			case 10:  clantag = "     Wii n e r  "; break;
 			case 11:  clantag = "    Wi i n e r   "; break;
 			case 12:  clantag = "   W i i n e r    "; break;
-			case 13:  clantag = "  Wi i n e r     "; break;
-			case 14:  clantag = " Wii n e r       "; break;
-			case 15:  clantag = " Wiin e r       "; break;
-			case 16:  clantag = " Wiine r       "; break;
-			case 17:  clantag = " Wiiner       "; break;
+			case 13:  clantag = "    W i i n e r    "; break;
+			case 14:  clantag = "    W i i n e r    "; break;
+			case 15:  clantag = "    W i i n e r    "; break;
+			case 16:  clantag = "  Wi i n e r     "; break;
+			case 17:  clantag = " Wii n e r       "; break;
+			case 18:  clantag = " Wiin e r       "; break;
+			case 19:  clantag = " Wiine r       "; break;
+			case 20:  clantag = " Wiiner       "; break;
 			}
 			set_clantag(clantag);
 			last_change = interfaces::globals->realtime;
@@ -180,7 +184,7 @@ void clantag()
 void crosshair()
 {
 
-	if (variables::aimbots::legit::crosshair == true && variables::aimbots::legit::rcs == false)
+	if (variables::aimbots::legit::crosshair == true && variables::aimbots::legit::rcs == false && interfaces::engine->is_in_game())
 	{
 		if (!csgo::local_player || !csgo::local_player->is_alive())
 			return;
@@ -235,15 +239,23 @@ void log(c_usercmd* cmd)
 	{
 		std::string viewangles = std::to_string(cmd->viewangles.x);
 
-		render::draw_text_string(20, 40, render::fonts::tabfont, "Viewangles" + viewangles, false, color(255, 255, 0));
 	}
 }
 
 void Fov()
 {
+	if (csgo::local_player == nullptr)
+		return;
+
+	if (!csgo::local_player->is_alive())
+		return;
+	
 	if (variables::fov::fovOveride == true)
 	{
-		float fov = variables::fov::fovamount;
+		if (csgo::local_player)
+		{
+			
+		}
 	}
 }
 
@@ -253,7 +265,6 @@ void watermark()
 	{
 		if (interfaces::engine->is_in_game() == true)
 		{
-
 			for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
 			{
 				player_info_t playerinfo;
@@ -263,21 +274,83 @@ void watermark()
 
 				if (pCSPlayer == csgo::local_player)
 				{
+					if (csgo::local_player == nullptr)
+						return;
+					
 					std::string name = playerinfo.name;
-
-					render::draw_text_string(1420, 50, render::fonts::watermark_font, name, false, color(255, 255, 255));
-
-					if (csgo::local_player->is_moving())
-					{
-						render::draw_text_string(1480, 50, render::fonts::watermark_font, " | Moving ", false, color(255, 255, 255));
-					}
-
-					if (csgo::local_player->is_moving() == false)
-					{
-						render::draw_text_string(1540, 50, render::fonts::watermark_font, " | Dormant ", false, color(255, 255, 255));
-					}
+					std::string weapon = csgo::local_player->active_weapon()->get_weapon_data()->weapon_name_alt;
+					
+					render::draw_filled_rect(1600, 30, 500, 20, color(45,45,45,120));
+					render::draw_text_string(1720, 33, render::fonts::watermark_font, name + " | ", true, color(255, 255, 255));
+					render::draw_text_string(1840, 33, render::fonts::watermark_font, weapon + " | ", true, color(255, 255, 255));
 				}
 			}
 		}
+	}
+}
+
+void knifehandFlip()
+{
+	if (!csgo::local_player || !csgo::local_player->is_alive())
+		return;
+
+	if (csgo::local_player == nullptr)
+		return;
+	
+	if (variables::misc::knifehandflip)
+	{
+		if (csgo::local_player->active_weapon()->get_weapon_data()->weapon_type == WEAPONTYPE_KNIFE)
+		{
+			interfaces::console->get_convar("cl_righthand")->set_value(0);
+		}
+		else
+		{
+			interfaces::console->get_convar("cl_righthand")->set_value(1);
+		}
+	}
+}
+
+void spreadxhair()
+{
+	if (variables::misc::spreadCircle)
+	{
+		if (!csgo::local_player || !csgo::local_player->is_alive())
+			return;
+		
+		if (csgo::local_player == nullptr)
+			return;
+		
+		std::pair<int, int> screen_size;
+
+		interfaces::surface->get_screen_size(screen_size.first, screen_size.second);
+		int x = screen_size.first / 2;
+		int y = screen_size.second / 2;
+
+		float spread = csgo::local_player->active_weapon()->get_weapon_data()->weapon_spread;
+
+		float inaccuracy = csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
+		float spreaddist = ((inaccuracy + spread) * 320.0f / tanf(DEG2RAD(6) / 2));
+		
+		spreaddist = (int)(spreaddist * ((float)(screen_size.second) / 480.0f));
+		
+		render::draw_circle(x, y, spreaddist, 3, color(75, 75, 75));		
+	}
+}
+
+void hitlogs(i_game_event* event)
+{
+	if (event->get_name() == "player_hurt")
+	{
+		int attacker = interfaces::engine->get_player_for_user_id(event->get_int("attacker"));
+		int victim = interfaces::engine->get_player_for_user_id(event->get_int("userid"));
+
+		if (attacker == interfaces::engine->get_local_player() && victim != interfaces::engine->get_local_player())
+		{
+			float duration = 5.0f;
+			
+			HitgroupToName(event->get_int("hitgroup"));
+			
+		}
+		
 	}
 }

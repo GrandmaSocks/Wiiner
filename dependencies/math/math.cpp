@@ -1,7 +1,7 @@
 #include "../utilities/csgo.hpp"
 
-//aimtux
-void math::correct_movement(vec3_t old_angles, c_usercmd* cmd, float old_forwardmove, float old_sidemove) {
+void math::correct_movement(vec3_t old_angles, c_usercmd* cmd, float old_forwardmove, float old_sidemove)
+{
 	float delta_view;
 	float f1;
 	float f2;
@@ -195,4 +195,50 @@ vec3_t math::normalize(vec3_t angle)
 		angle.z = 0;
 	}
 	return angle;
+}
+
+void angle_vectors2(const vec3_t& angles, vec3_t& forward) {
+	float	sp, sy, cp, cy;
+
+	math::sin_cos(DEG2RAD(angles[0]), &sp, &cp);
+	math::sin_cos(DEG2RAD(angles[1]), &sy, &cy);
+
+	forward.x = cp * cy;
+	forward.y = cp * sy;
+	forward.z = -sp;
+}
+
+void math::angle_vectors_alternative(const vec3_t& angles, vec3_t* forward) {
+	float	sp, sy, cp, cy;
+
+	sy = sin(DEG2RAD(angles[1]));
+	cy = cos(DEG2RAD(angles[1]));
+
+	sp = sin(DEG2RAD(angles[0]));
+	cp = cos(DEG2RAD(angles[0]));
+
+	forward->x = cp * cy;
+	forward->y = cp * sy;
+	forward->z = -sp;
+}
+
+void math::angle_vectors2(const vec3_t& angles, vec3_t& forward)
+{
+	float	sp, sy, cp, cy;
+
+	math::sin_cos(DEG2RAD(angles[0]), &sp, &cp);
+	math::sin_cos(DEG2RAD(angles[1]), &sy, &cy);
+
+	forward.x = cp * cy;
+	forward.y = cp * sy;
+	forward.z = -sp;
+}
+
+float math::get_fov(const vec3_t& view_angle, const vec3_t& aim_angle) {
+	vec3_t ang, aim;
+
+	math::angle_vectors2(view_angle, aim);
+	math::angle_vectors2(aim_angle, ang);
+
+	return RAD2DEG(acos(aim.dot(ang) / aim.length_sqr()));
 }

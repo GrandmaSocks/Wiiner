@@ -12,7 +12,7 @@ typedef int cvar_dll_indentifier_t;
 
 class i_console_display_func {
 public:
-	virtual void color_print( const uint8_t *clr, const char *msg ) = 0;
+	virtual void color_print(const color* clr, const char *msg ) = 0;
 	virtual void print( const char *msg ) = 0;
 	virtual void drint( const char *msg ) = 0;
 };

@@ -7,20 +7,8 @@
 
 
 namespace menu_framework {
-    void group_box(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, unsigned long font, const std::string string, bool show_label);
 
-    void tab(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, unsigned long font, const std::string, std::int32_t& tab, std::int32_t count, bool show_outline);
-
-    void check_box(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& value);
-
-    void slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, float& value, float min_value, float max_value);
     void menu_movement(std::int32_t& x, std::int32_t& y, std::int32_t w, std::int32_t h);
-
-    void combo_box(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string string, bool& isopened);
-
-    void clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, float& value, float min_value, float max_value, int rgb);
-
-    void textbutton(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& value);
 
     void keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, int& value);
 
@@ -55,3 +43,21 @@ namespace menu_framework {
 	};
 	
 };
+
+namespace menu
+{
+	void create(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, color bg, color header_text, color header_line, const std::string& name);
+	
+	void tab(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, unsigned long font, const std::string string, std::string icon, std::int32_t& tab, std::int32_t count, bool show_outline);
+
+	void group_box(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, unsigned long font, const std::string string, bool show_label, bool outline);
+	
+	void textbutton(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t position, unsigned long font, const std::string string, std::int32_t& section, std::int32_t count);
+
+	void check_box(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& value);
+	
+	void slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, float& value, float min_value, float max_value);
+	
+	void clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& opened, float& r, float& g, float& b);
+	
+}

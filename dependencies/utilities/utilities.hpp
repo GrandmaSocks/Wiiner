@@ -2,6 +2,8 @@
 #include <cstdint>
 #include "../../source-sdk/math/vector3d.hpp"
 
+#define sig_cam_think "85 C0 75 30 38 86"
+
 namespace utilities {
 	template< typename t >
 	__forceinline static t call_virtual( void *name, int offset ) {

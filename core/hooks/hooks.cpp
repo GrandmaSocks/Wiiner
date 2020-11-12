@@ -2,13 +2,14 @@
 #include "../features/features.hpp"
 #include "../features/misc/engine_prediction.hpp"
 #include "../menu/menu.hpp"
-
+#include "../features/rage/backtrack.h"
 
 hooks::create_move::fn create_move_original = nullptr;
 hooks::paint_traverse::fn paint_traverse_original = nullptr;
 hooks::frame_stage_notify::fn frame_stage_notify_original = nullptr;
 hooks::draw_model_execute::fn draw_model_execute_original = nullptr;
 hooks::sv_cheats::fn sv_cheats_original = nullptr;
+hooks::viewmodelfov::fn viewmodelfovorginal = nullptr;
 
 bool hooks::initialize() {
 	const auto create_move_target = reinterpret_cast<void*>(get_virtual(interfaces::clientmode, 24));
@@ -17,6 +18,7 @@ bool hooks::initialize() {
 	const auto frame_stage_notify = reinterpret_cast<void*>(get_virtual(interfaces::client, 37));
 	const auto draw_model_execute = reinterpret_cast<void*>(get_virtual(interfaces::model_render, 21));
 	const auto sv_cheats = reinterpret_cast<void*>(get_virtual(interfaces::console->get_convar("sv_cheats"), 13));
+	const auto viewmodelfov = reinterpret_cast<void*>(get_virtual(interfaces::clientmode, 35));
 
 	if (MH_Initialize() != MH_OK)
 		throw std::runtime_error("failed to initialize MH_Initialize.");
@@ -36,6 +38,9 @@ bool hooks::initialize() {
 	if (MH_CreateHook(sv_cheats, &sv_cheats::hook, reinterpret_cast<void**>(&sv_cheats_original)) != MH_OK)
 		throw std::runtime_error("failed to initialize sv_cheats. (outdated index?)");
 
+	if (MH_CreateHook(viewmodelfov, &viewmodelfov::hook, reinterpret_cast<void**>(&viewmodelfovorginal)) != MH_OK)
+		throw std::runtime_error("failed to initialize view model fov. (outdated index?)");
+	
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
 		throw std::runtime_error("failed to enable hooks.");
 
@@ -66,21 +71,29 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 	auto old_forwardmove = cmd->forwardmove;
 	auto old_sidemove = cmd->sidemove;
 
+	static bool once = []() {
+		backtrack.init();
+		return true;
+	} ();
+
+	backtrack.update();
+	
 	misc::movement::bunny_hop(cmd);
 	rcs(cmd);
 	aimbot(cmd);
 	clantag();
-	ragebot(cmd);
 	triggerbot(cmd);
+	knifehandFlip();
 	
 	player_t* entity;
-
-	antiaim(cmd);
 	
 	prediction::start(cmd); {
 
+		backtrack.run(cmd);
 		
-
+		WRAGEBOT::ragebot(cmd);
+		WRAGEBOT::antiaim(cmd);
+		
 	} prediction::end();
 
 	math::correct_movement(old_viewangles, cmd, old_forwardmove, old_sidemove);
@@ -103,12 +116,11 @@ void __stdcall hooks::paint_traverse::hook(unsigned int panel, bool force_repain
 	switch (panel_to_draw) {
 	case fnv::hash("MatSystemTopPanel"):
 
-		render::draw_text_string(20, 20, render::fonts::tabfont, "Debug", false, color(255, 255, 0));
-
 		antiflash();
 		esp();
 		boneesp();
 		crosshair();
+		spreadxhair();
 		watermark();
 		menu::toggle();
  		menu::render();;
@@ -135,6 +147,7 @@ void __stdcall hooks::frame_stage_notify::hook(client_frame_stage_t frame_stage)
 		for (auto index = 0; index < sz_var_map; index++)
 			*(uintptr_t*)((*(uintptr_t*)var_map) + index * 12) = flag;
 	};
+	
 	switch (frame_stage) {
 	case FRAME_UNDEFINED:
 		break;
@@ -149,6 +162,12 @@ void __stdcall hooks::frame_stage_notify::hook(client_frame_stage_t frame_stage)
 	case FRAME_NET_UPDATE_END:
 		break;
 	case FRAME_RENDER_START:
+
+		if (interfaces::engine->is_in_game())
+		{
+			WRAGEBOT::fixpvs();
+		}
+
 		if (local)
 		{
 			thirdperson();
@@ -160,7 +179,6 @@ void __stdcall hooks::frame_stage_notify::hook(client_frame_stage_t frame_stage)
 	}
 	frame_stage_notify_original(interfaces::client, frame_stage);
 }
-
 void __fastcall hooks::draw_model_execute::hook(void* _this, int edx, i_mat_render_context* ctx, const draw_model_state_t& state, const model_render_info_t& info, matrix_t* matrix) {
 	if (interfaces::engine->is_in_game() && interfaces::engine->is_connected() && csgo::local_player) {
 		const auto mdl = info.model;
@@ -195,4 +213,16 @@ bool __fastcall hooks::sv_cheats::hook(PVOID convar, int edx) {
 		return true;
 	else
 		return sv_cheats_original(convar);
+}
+
+float __fastcall hooks::viewmodelfov::hook(PVOID convar)
+{
+	if (variables::fov::fovOveride)
+	{
+		return viewmodelfovorginal(convar) + variables::fov::fovamount;
+	}
+	else
+	{
+		return viewmodelfovorginal(convar);
+	}
 }

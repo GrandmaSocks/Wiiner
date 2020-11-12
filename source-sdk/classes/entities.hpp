@@ -194,43 +194,53 @@ public:
 	}
 	collideable_t* collideable() {
 		using original_fn = collideable_t * (__thiscall*)(void*);
-		return (*(original_fn * *)this)[3](this);
+		return (*(original_fn**)this)[3](this);
 	}
 	c_client_class* client_class() {
 		using original_fn = c_client_class * (__thiscall*)(void*);
-		return (*(original_fn * *)networkable())[2](networkable());
+		return (*(original_fn**)networkable())[2](networkable());
 	}
 
 	int index() {
 		using original_fn = int(__thiscall*)(void*);
-		return (*(original_fn * *)networkable())[10](networkable());
+		return (*(original_fn**)networkable())[10](networkable());
 	}
 	bool is_player() {
 		using original_fn = bool(__thiscall*)(entity_t*);
-		return (*(original_fn * *)this)[157](this);
+		return (*(original_fn**)this)[157](this);
 	}
 	bool is_weapon() {
 		using original_fn = bool(__thiscall*)(entity_t*);
-		return (*(original_fn * *)this)[165](this);
+		return (*(original_fn**)this)[165](this);
 	}
-	bool setup_bones(matrix_t * out, int max_bones, int mask, float time) {
+	void invalidate_bone_cache() {
+		static DWORD addr = (DWORD)utilities::pattern_scan("client.dll", "80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81");
+
+		*(int*)((uintptr_t)this + 0xA30) = interfaces::globals->frame_count; //we'll skip occlusion checks now
+		*(int*)((uintptr_t)this + 0xA28) = 0;//clear occlusion flags
+
+		unsigned long g_iModelBoneCounter = **(unsigned long**)(addr + 10);
+		*(unsigned int*)((DWORD)this + 0x2924) = 0xFF7FFFFF; // m_flLastBoneSetupTime = -FLT_MAX;
+		*(unsigned int*)((DWORD)this + 0x2690) = (g_iModelBoneCounter - 1); // m_iMostRecentModelBoneCounter = g_iModelBoneCounter - 1;
+	}
+	bool setup_bones(matrix_t* out, int max_bones, int mask, float time) {
 		if (!this)
 			return false;
 
 		using original_fn = bool(__thiscall*)(void*, matrix_t*, int, int, float);
-		return (*(original_fn * *)animating())[13](animating(), out, max_bones, mask, time);
+		return (*(original_fn**)animating())[13](animating(), out, max_bones, mask, time);
 	}
 	model_t* model() {
 		using original_fn = model_t * (__thiscall*)(void*);
-		return (*(original_fn * *)animating())[8](animating());
+		return (*(original_fn**)animating())[8](animating());
 	}
 	void update() {
 		using original_fn = void(__thiscall*)(entity_t*);
-		(*(original_fn * *)this)[218](this);
+		(*(original_fn**)this)[218](this);
 	}
 	int draw_model(int flags, uint8_t alpha) {
 		using original_fn = int(__thiscall*)(void*, int, uint8_t);
-		return (*(original_fn * *)animating())[9](animating(), flags, alpha);
+		return (*(original_fn**)animating())[9](animating(), flags, alpha);
 	}
 	void set_angles(vec3_t angles) {
 		using original_fn = void(__thiscall*)(void*, const vec3_t&);
@@ -245,81 +255,81 @@ public:
 
 	void set_model_index(int index) {
 		using original_fn = void(__thiscall*)(void*, int);
-		return (*(original_fn * *)this)[75](this, index);
+		return (*(original_fn**)this)[75](this, index);
 	}
 
 	void net_pre_data_update(int update_type) {
 		using original_fn = void(__thiscall*)(void*, int);
-		return (*(original_fn * *)networkable())[6](networkable(), update_type);
+		return (*(original_fn**)networkable())[6](networkable(), update_type);
 	}
 
 	void net_release() {
 		using original_fn = void(__thiscall*)(void*);
-		return (*(original_fn * *)networkable())[1](networkable());
+		return (*(original_fn**)networkable())[1](networkable());
 	}
 
 	int net_set_destroyed_on_recreate_entities() {
 		using original_fn = int(__thiscall*)(void*);
-		return (*(original_fn * *)networkable())[13](networkable());
+		return (*(original_fn**)networkable())[13](networkable());
 	}
 
-	bool dormant( ) {
-		using original_fn = bool( __thiscall* )( void* );
-		return ( *static_cast< original_fn** >( networkable( ) ) )[ 9 ]( networkable( ) );
+	bool dormant() {
+		using original_fn = bool(__thiscall*)(void*);
+		return (*static_cast<original_fn**>(networkable()))[9](networkable());
 	}
-	
+
 	NETVAR("DT_CSPlayer", "m_fFlags", flags, int)
-	NETVAR("DT_BaseEntity", "m_hOwnerEntity", owner_handle, unsigned long)
-	NETVAR("DT_CSPlayer", "m_flSimulationTime", simulation_time, float)
-	NETVAR("DT_BasePlayer", "m_vecOrigin", origin, vec3_t)
-	NETVAR("DT_BasePlayer", "m_vecViewOffset[0]", view_offset, vec3_t)
-	NETVAR("DT_CSPlayer", "m_iTeamNum", team, int)
-	NETVAR("DT_BaseEntity", "m_bSpotted", spotted, bool)
-	NETVAR("DT_CSPlayer", "m_nSurvivalTeam", survival_team, int)
-	NETVAR("DT_CSPlayer", "m_flHealthShotBoostExpirationTime", health_boost_time, float)
+		NETVAR("DT_BaseEntity", "m_hOwnerEntity", owner_handle, unsigned long)
+		NETVAR("DT_CSPlayer", "m_flSimulationTime", simulation_time, float)
+		NETVAR("DT_BasePlayer", "m_vecOrigin", origin, vec3_t)
+		NETVAR("DT_BasePlayer", "m_vecViewOffset[0]", view_offset, vec3_t)
+		NETVAR("DT_CSPlayer", "m_iTeamNum", team, int)
+		NETVAR("DT_BaseEntity", "m_bSpotted", spotted, bool)
+		NETVAR("DT_CSPlayer", "m_nSurvivalTeam", survival_team, int)
+		NETVAR("DT_CSPlayer", "m_flHealthShotBoostExpirationTime", health_boost_time, float)
 };
 
 class econ_view_item_t {
 public:
 	NETVAR("DT_ScriptCreatedItem", "m_bInitialized", is_initialized, bool)
-	NETVAR("DT_ScriptCreatedItem", "m_iEntityLevel", entity_level, int)
-	NETVAR("DT_ScriptCreatedItem", "m_iAccountID", account_id, int)
-	NETVAR("DT_ScriptCreatedItem", "m_iItemIDLow", item_id_low, int)
+		NETVAR("DT_ScriptCreatedItem", "m_iEntityLevel", entity_level, int)
+		NETVAR("DT_ScriptCreatedItem", "m_iAccountID", account_id, int)
+		NETVAR("DT_ScriptCreatedItem", "m_iItemIDLow", item_id_low, int)
 };
 
 class base_view_model_t : public entity_t {
 public:
 	NETVAR("DT_BaseViewModel", "m_nModelIndex", model_index, int)
-	NETVAR("DT_BaseViewModel", "m_nViewModelIndex", view_model_index, int)
-	NETVAR("DT_BaseViewModel", "m_hWeapon", weapon, int)
-	NETVAR("DT_BaseViewModel", "m_hOwner", owner, int)
+		NETVAR("DT_BaseViewModel", "m_nViewModelIndex", view_model_index, int)
+		NETVAR("DT_BaseViewModel", "m_hWeapon", weapon, int)
+		NETVAR("DT_BaseViewModel", "m_hOwner", owner, int)
 };
 
 class weapon_t : public entity_t {
 public:
 	NETVAR("DT_BaseCombatWeapon", "m_flNextPrimaryAttack", next_primary_attack, float)
-	NETVAR("DT_BaseCombatWeapon", "m_flNextSecondaryAttack", next_secondary_attack, float)
-	NETVAR("DT_BaseCombatWeapon", "m_iClip1", clip1_count, int)
-	NETVAR("DT_BaseCombatWeapon", "m_iClip2", clip2_count, int)
-	NETVAR("DT_BaseCombatWeapon", "m_iPrimaryReserveAmmoCount", primary_reserve_ammo_acount, int)
-	NETVAR("DT_WeaponCSBase", "m_flRecoilIndex", recoil_index, float)
-	NETVAR("DT_WeaponCSBaseGun", "m_zoomLevel", zoom_level, float)
-	NETVAR("DT_BaseAttributableItem", "m_iItemDefinitionIndex", item_definition_index, short)
-	NETVAR("DT_BaseCombatWeapon", "m_iEntityQuality", entity_quality, int)
+		NETVAR("DT_BaseCombatWeapon", "m_flNextSecondaryAttack", next_secondary_attack, float)
+		NETVAR("DT_BaseCombatWeapon", "m_iClip1", clip1_count, int)
+		NETVAR("DT_BaseCombatWeapon", "m_iClip2", clip2_count, int)
+		NETVAR("DT_BaseCombatWeapon", "m_iPrimaryReserveAmmoCount", primary_reserve_ammo_acount, int)
+		NETVAR("DT_WeaponCSBase", "m_flRecoilIndex", recoil_index, float)
+		NETVAR("DT_WeaponCSBaseGun", "m_zoomLevel", zoom_level, float)
+		NETVAR("DT_BaseAttributableItem", "m_iItemDefinitionIndex", item_definition_index, short)
+		NETVAR("DT_BaseCombatWeapon", "m_iEntityQuality", entity_quality, int)
 
-	float inaccuracy() {
+		float inaccuracy() {
 		using original_fn = float(__thiscall*)(void*);
-		return (*(original_fn * *)this)[482](this);
+		return (*(original_fn**)this)[482](this);
 	}
 
 	float get_spread() {
 		using original_fn = float(__thiscall*)(void*);
-		return (*(original_fn * *)this)[452](this);
+		return (*(original_fn**)this)[452](this);
 	}
 
 	void update_accuracy_penalty() {
 		using original_fn = void(__thiscall*)(void*);
-		(*(original_fn * *)this)[483](this);
+		(*(original_fn**)this)[483](this);
 	}
 
 	weapon_info_t* get_weapon_data() {
@@ -341,37 +351,39 @@ private:
 
 public:
 	NETVAR("DT_BasePlayer", "m_hViewModel[0]", view_model, int)
-	NETVAR("DT_CSPlayer", "m_bHasDefuser", has_defuser, bool)
-	NETVAR("DT_CSPlayer", "m_bGunGameImmunity", has_gun_game_immunity, bool)
-	NETVAR("DT_CSPlayer", "m_iShotsFired", shots_fired, int)
-	NETVAR("DT_CSPlayer", "m_angEyeAngles", eye_angles, vec3_t)
-	NETVAR("DT_CSPlayer", "m_ArmorValue", armor, int)
-	NETVAR("DT_CSPlayer", "m_bHasHelmet", has_helmet, bool)
-	NETVAR("DT_CSPlayer", "m_bIsScoped", is_scoped, bool)
-	NETVAR("DT_CSPlayer", "m_bIsDefusing", is_defusing, bool)
-	NETVAR("DT_CSPlayer", "m_iAccount", money, int)
-	NETVAR("DT_CSPlayer", "m_flLowerBodyYawTarget", lower_body_yaw, float)
-	NETVAR("DT_CSPlayer", "m_flNextAttack", next_attack, float)
-	NETVAR("DT_CSPlayer", "m_flFlashDuration", flash_duration, float)
-	NETVAR("DT_CSPlayer", "m_flFlashMaxAlpha", flash_alpha, float)
-	NETVAR("DT_CSPlayer", "m_bHasNightVision", has_night_vision, bool)
-	NETVAR("DT_CSPlayer", "m_bNightVisionOn", night_vision_on, bool)
-	NETVAR("DT_CSPlayer", "m_iHealth", health, int)
-	NETVAR("DT_CSPlayer", "m_lifeState", life_state, int)
-	NETVAR("DT_CSPlayer", "m_fFlags", flags, int)
-	NETVAR("DT_BasePlayer", "m_viewPunchAngle", punch_angle, vec3_t)
-	NETVAR("DT_BasePlayer", "m_aimPunchAngle", aim_punch_angle, vec3_t)
-	NETVAR("DT_BasePlayer", "m_vecVelocity[0]", velocity, vec3_t)
-	NETVAR("DT_BasePlayer", "m_flMaxspeed", max_speed, float)
-	NETVAR("DT_BaseEntity", "m_flShadowCastDistance", fov_time, float)
-	NETVAR("DT_BasePlayer", "m_hObserverTarget", observer_target, unsigned long)
-	NETVAR("DT_BasePlayer", "m_nHitboxSet", hitbox_set, int)
-	NETVAR("DT_CSPlayer", "m_flDuckAmount", duck_amount, float)
-	NETVAR("DT_CSPlayer", "m_bHasHeavyArmor", has_heavy_armor, bool)
-	NETVAR("DT_SmokeGrenadeProjectile", "m_nSmokeEffectTickBegin", smoke_grenade_tick_begin, int)
-	NETVAR("DT_CSPlayer", "m_nTickBase", get_tick_base, int)
+		NETVAR("DT_CSPlayer", "m_bHasDefuser", has_defuser, bool)
+		NETVAR("DT_CSPlayer", "m_bGunGameImmunity", has_gun_game_immunity, bool)
+		NETVAR("DT_CSPlayer", "m_iShotsFired", shots_fired, int)
+		NETVAR("DT_CSPlayer", "m_angEyeAngles", eye_angles, vec3_t)
+		NETVAR("DT_CSPlayer", "m_ArmorValue", armor, int)
+		NETVAR("DT_CSPlayer", "m_bHasHelmet", has_helmet, bool)
+		NETVAR("DT_CSPlayer", "m_bIsScoped", is_scoped, bool)
+		NETVAR("DT_CSPlayer", "m_bIsDefusing", is_defusing, bool)
+		NETVAR("DT_CSPlayer", "m_iAccount", money, int)
+		NETVAR("DT_CSPlayer", "m_flLowerBodyYawTarget", lower_body_yaw, float)
+		NETVAR("DT_CSPlayer", "m_flNextAttack", next_attack, float)
+		NETVAR("DT_CSPlayer", "m_flFlashDuration", flash_duration, float)
+		NETVAR("DT_CSPlayer", "m_flFlashMaxAlpha", flash_alpha, float)
+		NETVAR("DT_CSPlayer", "m_bHasNightVision", has_night_vision, bool)
+		NETVAR("DT_CSPlayer", "m_bNightVisionOn", night_vision_on, bool)
+		NETVAR("DT_CSPlayer", "m_iHealth", health, int)
+		NETVAR("DT_CSPlayer", "m_lifeState", life_state, int)
+		NETVAR("DT_CSPlayer", "m_fFlags", flags, int)
+		NETVAR("DT_BasePlayer", "m_viewPunchAngle", punch_angle, vec3_t)
+		NETVAR("DT_BasePlayer", "m_aimPunchAngle", aim_punch_angle, vec3_t)
+		NETVAR("DT_BasePlayer", "m_vecVelocity[0]", velocity, vec3_t)
+		NETVAR("DT_BasePlayer", "m_flMaxspeed", max_speed, float)
+		NETVAR("DT_BaseEntity", "m_flShadowCastDistance", fov_time, float)
+		NETVAR("DT_BasePlayer", "m_hObserverTarget", observer_target, unsigned long)
+		NETVAR("DT_BasePlayer", "m_nHitboxSet", hitbox_set, int)
+		NETVAR("DT_CSPlayer", "m_flDuckAmount", duck_amount, float)
+		NETVAR("DT_CSPlayer", "m_bHasHeavyArmor", has_heavy_armor, bool)
+		NETVAR("DT_SmokeGrenadeProjectile", "m_nSmokeEffectTickBegin", smoke_grenade_tick_begin, int)
+		NETVAR("DT_CSPlayer", "m_nTickBase", get_tick_base, int)
+		NETVAR("CBasePlayer", "m_iFOV", fov, int)
 
-	weapon_t* active_weapon() {
+	weapon_t* active_weapon()
+	{
 		auto active_weapon = read<uintptr_t>(netvar_manager::get_net_var(fnv::hash("DT_CSPlayer"), fnv::hash("m_hActiveWeapon"))) & 0xFFF;
 		return reinterpret_cast<weapon_t*>(interfaces::entity_list->get_client_entity(active_weapon));
 	}
@@ -388,22 +400,11 @@ public:
 		return origin() + view_offset();
 	}
 
-	void invalidate_bone_cache() {
-		static DWORD addr = (DWORD)utilities::pattern_scan("client.dll", "80 3D ? ? ? ? ? 74 16 A1 ? ? ? ? 48 C7 81");
-
-		*(int*)((uintptr_t)this + 0xA30) = interfaces::globals->frame_count; //we'll skip occlusion checks now
-		*(int*)((uintptr_t)this + 0xA28) = 0;//clear occlusion flags
-
-		unsigned long g_iModelBoneCounter = **(unsigned long**)(addr + 10);
-		*(unsigned int*)((DWORD)this + 0x2924) = 0xFF7FFFFF; // m_flLastBoneSetupTime = -FLT_MAX;
-		*(unsigned int*)((DWORD)this + 0x2690) = (g_iModelBoneCounter - 1); // m_iMostRecentModelBoneCounter = g_iModelBoneCounter - 1;
-	}
-
 	anim_state* get_anim_state() {
-		return *reinterpret_cast<anim_state * *>(this + 0x3914);
+		return *reinterpret_cast<anim_state**>(this + 0x3914);
 	}
 
-	bool can_see_player_pos(player_t * player, const vec3_t & pos) {
+	bool can_see_player_pos(player_t* player, const vec3_t& pos) {
 		trace_t tr;
 		ray_t ray;
 		trace_filter filter;
@@ -449,22 +450,22 @@ public:
 	}
 
 	bool is_alive() {
-		if ( !this ) return false;
+		if (!this) return false;
 		return this->health() > 0;
 	}
 
 	bool is_moving() {
-		if ( !this ) return false;
+		if (!this) return false;
 		return this->velocity().length() > 0.1f;
 	}
 
 	bool is_in_air() {
-		if ( !this ) return false;
-		return !( this->flags() & fl_onground );
+		if (!this) return false;
+		return !(this->flags() & fl_onground);
 	}
 
 	bool is_flashed() {
-		if ( !this ) return false;
+		if (!this) return false;
 		return this->flash_duration() > 0.0f;
 	}
 
@@ -488,43 +489,21 @@ public:
 		else
 			return false;
 	}
-
-	bool in_smoke(player_t* entity)
-	{
-		auto local_player = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(interfaces::engine->get_local_player()));
-		trace_filter filter;
-		ray_t ray;
-		trace_t trace;
-		vec3_t start, end;
-		filter.skip = local_player;
-		start = local_player->origin() + local_player->view_offset();
-		end = entity->get_eye_pos();
-		ray.initialize(start, end);
-
-		// cast ray
-		interfaces::trace_ray->trace_ray(ray, MASK_OPAQUE_AND_NPCS, &filter, &trace);
-
-		if (trace.entity == entity || trace.flFraction > .97f)
-			return true;
-		else
-			return false;
-	}
-
-
+	
 	void update_client_side_animations() {
 		using original_fn = void(__thiscall*)(void*);
-		(*(original_fn * *)this)[223](this);
+		(*(original_fn**)this)[223](this);
 	}
 
 	vec3_t& abs_origin() {
 		using original_fn = vec3_t & (__thiscall*)(void*);
-		return (*(original_fn * *)this)[10](this);;
+		return (*(original_fn**)this)[10](this);;
 	}
 	vec3_t& abs_angles() {
 		using original_fn = vec3_t & (__thiscall*)(void*);
-		return (*(original_fn * *)this)[11](this);;
+		return (*(original_fn**)this)[11](this);;
 	}
-
+	
 	int move_type() {
 		static int type = netvar_manager::get_net_var(fnv::hash("DT_BaseEntity"), fnv::hash("m_nRenderMode")) + 1;
 		return read<int>(type);

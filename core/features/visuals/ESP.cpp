@@ -1,11 +1,25 @@
 #include "../features.hpp"
+#include "../rage/backtrack.h"
 
 void esp() /* I just draw all player esp in this function because why not */
 {
 	if (variables::Visuals::esp::espToggle == true && interfaces::engine->is_in_game()) /* Where esp is getting drawn */
 	{
+		if (interfaces::engine->is_in_game() == false)
+			return;
+
+		if (csgo::local_player == nullptr)
+			return;
+		
 		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++) /* Player loop */
 		{
+
+			if (interfaces::engine->is_in_game() == false)
+				return;
+
+			if (csgo::local_player == nullptr)
+				return;
+			
 			auto pCSPlayer = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(iPlayer));
 			if (!pCSPlayer)
 				continue;
@@ -53,18 +67,28 @@ void esp() /* I just draw all player esp in this function because why not */
 			int healthheight = (h * pCSPlayer->health()) / 100;
 			int armorheight = (h * pCSPlayer->armor()) / 100;
 
+			color espclr;
 
+			if (variables::Visuals::esp::hpoverridecheck && pCSPlayer->health() <= variables::colors::esp::hpoverride)
+			{
+				espclr = color(variables::colors::esp::o_red, variables::colors::esp::o_green, variables::colors::esp::o_blue);
+			}
+			else
+			{
+				espclr = color::white();
+			}
+			
 			if (pCSPlayer->team() != csgo::local_player->team()) 
 			{
 				if (variables::Visuals::esp::name == true) /* Name esp */
 				{
-					render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 15, render::fonts::watermark_font, playerinfo.name, true, color::white());
+					render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 15, render::fonts::espfont, playerinfo.name, true, espclr);
 				}
 				 
 				if (variables::Visuals::esp::box == true) /* Box esp */
 				{
 					render::draw_rect(x, y, w, h, color::black());
-					render::draw_rect(x + 1, y + 1, w - 2, h - 2, color::white());
+					render::draw_rect(x + 1, y + 1, w - 2, h - 2, espclr);
 				}
 
 				if (variables::Visuals::esp::healthbar) /* Health Bar esp */
@@ -103,7 +127,7 @@ void esp() /* I just draw all player esp in this function because why not */
 					if (pCSPlayer->is_alive() == true)
 					{
 						std::string wep = pCSPlayer->active_weapon()->get_weapon_data()->weapon_name_alt;
-						render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 25, render::fonts::watermark_font, wep, true, color(255,255,0));
+						render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 25, render::fonts::espfont, wep, true, color(255,255,0));
 					}
 				}
 
@@ -162,6 +186,12 @@ void boneesp() /* Skeletons */
 				{
 					for (int i = 0; i < pStudioModel->bones_count; i++)
 					{
+						if (interfaces::engine->is_in_game() == false)
+							return;
+						
+						if (csgo::local_player == nullptr)
+							return;
+						
 						studio_bone_t* pBone = pStudioModel->bone(i);
 						if (!pBone || !(pBone->flags & 256) || pBone->parent == -1)
 							continue;
@@ -173,6 +203,7 @@ void boneesp() /* Skeletons */
 						vec2_t vBonePos2;
 						if (!math::world_to_screen(vec3_t(pBoneToWorldOut[pBone->parent][0][3], pBoneToWorldOut[pBone->parent][1][3], pBoneToWorldOut[pBone->parent][2][3]), vBonePos2))
 							continue;
+						
 						else if (pCSPlayer->team() != csgo::local_player->team())
 						{
 							render::draw_line(vBonePos1.x, vBonePos1.y, vBonePos2.x, vBonePos2.y, color::white());
@@ -222,6 +253,12 @@ void boneesp() /* Skeletons */
 			{
 				for (int i = 0; i < pStudioModel->bones_count; i++)
 				{
+					if (interfaces::engine->is_in_game() == false)
+						return;
+
+					if (csgo::local_player == nullptr)
+						return;
+					
 					studio_bone_t* pBone = pStudioModel->bone(i);
 					if (!pBone || !(pBone->flags & 256) || pBone->parent == -1)
 						continue;
@@ -242,7 +279,75 @@ void boneesp() /* Skeletons */
 			}
 		}
 	}
-	else {}
+	if (variables::Visuals::esp::backtrackskeleton == true) /* Draw bones always */
+	{
+		for (int iPlayer = 0; iPlayer < interfaces::globals->max_clients; iPlayer++)
+		{
+			auto pCSPlayer = reinterpret_cast<player_t*>(interfaces::entity_list->get_client_entity(iPlayer));
+			
+			if (!pCSPlayer)
+				continue;
+			if (pCSPlayer == csgo::local_player)
+				continue;
+			if (pCSPlayer->dormant())
+				continue;
+			if (!(pCSPlayer->is_alive() && pCSPlayer->health() > 0))
+				continue;
+			
+			vec3_t vecFoot;
+			vec2_t vecScreen;
+			vec2_t vecHeadScreen;
+			vecFoot = pCSPlayer->origin();
+			if (!(math::world_to_screen(vecFoot, vecScreen)))
+				continue;
+
+			vecFoot.z += 72.f;
+			if (!(math::world_to_screen(vecFoot, vecHeadScreen)))
+				continue;
+
+			player_info_t playerinfo;
+			interfaces::engine->get_player_info(iPlayer, &playerinfo);
+
+			auto pStudioModel = interfaces::model_info->get_studio_model(pCSPlayer->model());
+			if (!pStudioModel)
+				return;
+
+			static matrix_t pBoneToWorldOut[128];
+			if (pCSPlayer->setup_bones(pBoneToWorldOut, 128, 256, 0))
+			{
+				for (int i = 0; i < pStudioModel->bones_count; i++)
+				{
+					if (interfaces::engine->is_in_game() == false)
+						return;
+
+					if (csgo::local_player == nullptr)
+						return;
+
+					studio_bone_t* pBone = pStudioModel->bone(i);
+					if (!pBone || !(pBone->flags & 256) || pBone->parent == -1)
+						continue;
+
+					vec2_t vBonePos1;
+					if (!math::world_to_screen(vec3_t(pBoneToWorldOut[i][0][3], pBoneToWorldOut[i][1][3], pBoneToWorldOut[i][2][3]), vBonePos1))
+						continue;
+
+					vec2_t vBonePos2;
+					
+					if (!math::world_to_screen(vec3_t(pBoneToWorldOut[pBone->parent][0][3], pBoneToWorldOut[pBone->parent][1][3], pBoneToWorldOut[pBone->parent][2][3]), vBonePos2))
+						continue;
+					
+					else if (pCSPlayer->team() != csgo::local_player->team() && records[pCSPlayer->index()].size() > 0 && variables::aimbots::backtrack == true)
+					{
+						for (uint32_t i = 0; i < records[pCSPlayer->index()].size(); i++)
+						{
+							//render::draw_line(records[vBonePos1.x], vBonePos1.y, vBonePos2.x, vBonePos2.y, color::white());
+						}
+					}
+				}
+
+			}
+		}
+	}
 }
 
 void gernadepredict(c_usercmd* cmd) /* Grenade prediction */

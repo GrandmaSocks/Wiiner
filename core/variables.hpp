@@ -1,15 +1,20 @@
 #pragma once
 
+static bool in_thirdperson = false;
+
 namespace variables {
 
 	///////////////////////////////////////////
 
+	inline bool chamopened = false;
+	inline bool bchamsopened = false;
+	inline bool canshoot = false;
+	
 	namespace misc
 	{
 		inline bool pbunny = true;
 		inline bool lbunny = false;
 		inline bool antiflash = false;
-
 		inline bool thirdperson = false;
 		inline bool dtag = false;
 		inline bool stag = false;
@@ -17,6 +22,10 @@ namespace variables {
 		inline bool airstuck = false;
 		inline bool watermark = true;
 		inline bool autostrafe = false;
+		inline bool nosmoke = false;
+		inline bool knifehandflip = false;
+		inline bool spreadCircle = false;
+		inline bool classicmenu = true;
 	}
 
 	///////////////////////////////////////////
@@ -28,21 +37,28 @@ namespace variables {
 			inline bool espToggle = true;
 			inline bool box = true;
 			inline bool healthbar = true;
-			inline bool shieldbar = true;
+			inline bool shieldbar = false;
 			inline bool name = true;
-			inline bool bonevisible = true;
+			inline bool bonevisible = false;
 			inline bool bonealways = false;
 			inline bool weaponesp = false;
+			inline bool hpoverridecheck = true;
+			inline bool backtrackskeleton = false;
 		}
 
 		namespace chams
 		{
 			inline bool chams = true;
-			inline bool chamsxqz = false;
-			inline bool chamsvisible = false;
-			inline bool chamsalways = true;
+			inline bool chamsxqz = true;
+			inline bool chamsvisible = true;
+			inline bool chamsalways = false;
 			inline bool nohands = false;
 			inline bool armschams = false;
+
+			inline bool hands_wireframe = false;
+			inline bool wireframe = false;
+			inline bool xqz_wireframe = false;
+			inline bool backtrackchams = true;
 		}
 
 	}
@@ -51,6 +67,7 @@ namespace variables {
 
 	namespace aimbots
 	{
+		inline bool backtrack = true;
 		namespace trigger
 		{
 			namespace pistols
@@ -91,6 +108,7 @@ namespace variables {
 				inline bool chest = true;
 				inline bool stomach = true;
 				inline float hitchance;
+				inline bool scopeCheck = true;
 			}
 			
 			namespace bones
@@ -112,12 +130,15 @@ namespace variables {
 				inline bool rcs = false;
 				inline float smoothing = 2.0f;
 				inline bool silentaim = false;
-				inline bool randombones = true;
+				inline bool randombones = false;
 				inline bool ahead = false;
 				inline bool achest = false;
 				inline bool astomach = false;
 				inline bool yisopened = false;
 				inline float fov;
+				inline bool oof = false;
+				inline bool headprioirtybone = false;
+				inline bool bodyprioritybone = true;
 			}
 
 			namespace smgs
@@ -127,12 +148,15 @@ namespace variables {
 				inline bool rcs = false;
 				inline float smoothing = 2.0f;
 				inline bool silentaim = false;
-				inline bool randombones = true;
+				inline bool randombones = false;
 				inline bool ahead = false;
 				inline bool achest = false;
 				inline bool astomach = false;
 				inline bool yisopened = false;
 				inline float fov;
+				inline bool oof = false;
+				inline bool headprioirtybone = false;
+				inline bool bodyprioritybone = true;
 			}
 
 			namespace rifles
@@ -142,12 +166,15 @@ namespace variables {
 				inline bool rcs = false;
 				inline float smoothing = 2.0f;
 				inline bool silentaim = false;
-				inline bool randombones = true;
+				inline bool randombones = false;
 				inline bool ahead = false;
 				inline bool achest = false;
 				inline bool astomach = false;
 				inline bool yisopened = false;
 				inline float fov;
+				inline bool oof = false;
+				inline bool headprioirtybone = false;
+				inline bool bodyprioritybone = true;
 			}
 
 			namespace snipers
@@ -157,14 +184,17 @@ namespace variables {
 				inline bool rcs = false;
 				inline float smoothing = 2.0f;
 				inline bool silentaim = false;
-				inline bool randombones = true;
+				inline bool randombones = false;
 				inline bool ahead = false;
 				inline bool achest = false;
 				inline bool astomach = false;
 				inline bool yisopened = false;
 				inline float fov;
 				inline bool aimcheck = true;
-
+				inline bool oof = false;
+				inline bool headprioirtybone = false;
+				inline bool bodyprioritybone = true;
+				
 				namespace keybindings
 				{
 					inline int aimbotbind;
@@ -294,8 +324,8 @@ namespace variables {
 	
 	namespace fov
 	{
-		inline bool fovOveride = false;
-		inline float fovamount = 5.0f;
+		inline bool fovOveride = true;
+		inline float fovamount = 36.0f;
 	}
 
 	///////////////////////////////////////////
@@ -306,24 +336,35 @@ namespace variables {
 		{
 			namespace floats
 			{
-				inline float r = 0.0f;
-				inline float g = 190.0f;
-				inline float b = 0.0f;
+				inline float r = 52.0f;
+				inline float g = 134.0f;
+				inline float b = 235.0f;
 			}
 			
 			// color(52, 134, 235, 255);
 			// 33, 156, 67
 			inline color c_menu = color(floats::r, floats::g, floats::b, 255);
 		}
+
+		namespace esp
+		{
+			inline float o_red = 255.0f;
+			inline float o_green = 0.0f;
+			inline float o_blue = 0.0f;
+			inline float hpoverride = 50.0f;
+		}
 		
 		namespace cFloats
 		{
 			inline float c_red = 255.0f;
-			inline float c_green = 0.0f;
+			inline float c_green = 180.0f;
 			inline float c_blue = 0.0f;
 			inline float xqz_c_red = 255.0f;
-			inline float xqz_c_green = 0.0f;
+			inline float xqz_c_green = 255.0f;
 			inline float xqz_c_blue = 0.0f;
+			inline float b_red = 100.0f;
+			inline float b_green = 100.0f;
+			inline float b_blue = 255.0f;
 		}
 
 		namespace cMats
@@ -342,6 +383,9 @@ namespace variables {
 			inline bool m_normal = true;
 			inline bool m_flat = false;
 			inline bool m_ghost = false;
+			inline bool xqz_m_normal = true;
+			inline bool xqz_m_flat = false;
+			inline bool xqz_m_ghost = false;
 		}
 		
 		inline color chamcolor = color::red();
@@ -381,6 +425,14 @@ namespace variables {
 	///////////////////////////////////////////
 
 	namespace menu {
+
+		namespace tabs
+		{
+			inline bool legit_pistols = true;
+			inline bool legit_smgs = false;
+			inline bool legit_rifles = false;
+			inline bool legit_snipers = false;
+		}
 		
 		namespace combos
 		{
@@ -397,7 +449,9 @@ namespace variables {
 
 		inline bool opened = true;
 		inline int x = 140, y = 140;
-		inline int w = 825, h = 800;
+		inline int w = 900, h = 700;
+
+		inline int cx = 100, cy = 20;
 	}
 
 	///////////////////////////////////////////

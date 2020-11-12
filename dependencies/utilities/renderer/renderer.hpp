@@ -36,5 +36,12 @@ namespace render {
 
 	namespace fonts {
 		extern unsigned long watermark_font;
+		extern unsigned long menufont;
+		extern unsigned long menucontent;
+		extern unsigned long Sweaponicons;
+		extern unsigned long espfont;
+		extern unsigned long tabicons;
+		extern unsigned long headerfont;
+		extern unsigned long bodyfont;
 	}
 }

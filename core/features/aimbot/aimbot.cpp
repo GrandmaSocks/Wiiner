@@ -130,6 +130,9 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 
 	const auto weapon_type = csgo::local_player->active_weapon()->get_weapon_data()->weapon_type;
 
+	if (weapon_type == NULL)
+		return;
+	
 	if (weapon_type == WEAPONTYPE_PISTOL)
 	{
 		if (variables::aimbots::legit::pistols::aimbotToggle == true)
@@ -221,6 +224,12 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 				if (!entity)
 					return;
 
+				if (variables::aimbots::legit::pistols::headprioirtybone)
+					bone = 8;
+
+				if (variables::aimbots::legit::pistols::bodyprioritybone)
+					bone = 6;
+				
 				if (variables::aimbots::legit::pistols::ahead && trace.hitGroup == hitgroup_head)
 				{
 					bone = 8;
@@ -283,7 +292,7 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 
 				if (!entity)
 					return;
-
+				
 				if (random == 1)
 				{
 					bone = 7;
@@ -327,7 +336,7 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 				vec3_t start, end, forward;
 
 				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
-
+				
 				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
 				start = csgo::local_player->get_eye_pos();
 				end = start + forward;
@@ -353,6 +362,12 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 				if (!entity)
 					return;
 
+				if (variables::aimbots::legit::smgs::headprioirtybone)
+					bone = 8;
+
+				if (variables::aimbots::legit::smgs::bodyprioritybone)
+					bone = 6;
+				
 				if (variables::aimbots::legit::smgs::ahead && trace.hitGroup == hitgroup_head)
 				{
 					bone = 8;
@@ -483,6 +498,12 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 				if (!entity)
 					return;
 
+				if (variables::aimbots::legit::rifles::headprioirtybone)
+					bone = 8;
+
+				if (variables::aimbots::legit::rifles::bodyprioritybone)
+					bone = 6;
+				
 				if (variables::aimbots::legit::rifles::ahead && trace.hitGroup == hitgroup_head)
 				{
 					bone = 8;
@@ -620,6 +641,12 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 				if (!entity)
 					return;
 
+				if (variables::aimbots::legit::snipers::headprioirtybone)
+					bone = 8;
+
+				if (variables::aimbots::legit::snipers::bodyprioritybone)
+					bone = 6;
+				
 				if (variables::aimbots::legit::snipers::ahead && trace.hitGroup == hitgroup_head)
 				{
 					bone = 8;
@@ -748,17 +775,17 @@ void triggerbot(c_usercmd* user_cmd)
 			if (trace.entity->team() == csgo::local_player->team())
 				return;
 
-			if (variables::aimbots::trigger::pistols::head && trace.hitGroup == hitgroup_head)
+			if (variables::aimbots::trigger::smgs::head && trace.hitGroup == hitgroup_head)
 			{
 				user_cmd->buttons |= in_attack;
 			}
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+			if (variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_leftarm)
 			{
 				user_cmd->buttons |= in_attack;
 			}
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+			if (variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_leftarm)
 			{
 				user_cmd->buttons |= in_attack;
 			}
@@ -794,17 +821,17 @@ void triggerbot(c_usercmd* user_cmd)
 			if (trace.entity->team() == csgo::local_player->team())
 				return;
 
-			if (variables::aimbots::trigger::pistols::head && trace.hitGroup == hitgroup_head)
+			if (variables::aimbots::trigger::rifles::head && trace.hitGroup == hitgroup_head)
 			{
 				user_cmd->buttons |= in_attack;
 			}
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+			if (variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_leftarm)
 			{
 				user_cmd->buttons |= in_attack;
 			}
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+			if (variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_leftarm)
 			{
 				user_cmd->buttons |= in_attack;
 			}
@@ -815,6 +842,9 @@ void triggerbot(c_usercmd* user_cmd)
 	{
 		if (variables::aimbots::trigger::snipers::enabled == true)
 		{
+
+			if (variables::aimbots::trigger::snipers::scopeCheck == true && csgo::local_player->is_scoped() == false)
+				return;
 
 			int trigger_bone[] = { 0, hitgroup_head, hitgroup_chest, hitgroup_stomach };
 
@@ -844,17 +874,17 @@ void triggerbot(c_usercmd* user_cmd)
 			if (trace.entity->team() == csgo::local_player->team())
 				return;
 
-			if (variables::aimbots::trigger::pistols::head && trace.hitGroup == hitgroup_head)
+			if (variables::aimbots::trigger::snipers::head && trace.hitGroup == hitgroup_head)
 			{
 				user_cmd->buttons |= in_attack;
 			}
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+			if (variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_leftarm)
 			{
 				user_cmd->buttons |= in_attack;
 			}
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+			if (variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_leftarm)
 			{
 				user_cmd->buttons |= in_attack;
 			}

@@ -1,614 +1,406 @@
-#include "menu.hpp"
-
-auto do_frame = [&](std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, color bg, color header_text, color header_line, const std::string& name) {
-	render::draw_filled_rect(x, y, w, h, bg);
-	render::draw_filled_rect(x, y, w, h, bg);
-	render::draw_filled_rect(x, y, w, 30, header_text);
-	render::draw_filled_rect(x, y + 30, w, 2, header_line);
-	render::text(x + 10, y + 8, render::fonts::watermark_font, name, false, color::white());
-};
+﻿#include "menu.hpp"
 
 void menu::render()
 {
+
 	if (!variables::menu::opened)
 		return;
 
-	do_frame(variables::menu::x, variables::menu::y, variables::menu::w, variables::menu::h, color(36, 36, 36, 255), color(25, 25, 25, 255), color(36, 36, 36, 255), "WiinerV2 | Welcome User | Enjoy Hitting P |");
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	if (GetAsyncKeyState(VK_F8) & 1 && variables::menu::opened)
+		variables::misc::classicmenu = !variables::misc::classicmenu;
 
-	menu_framework::group_box(variables::menu::x, variables::menu::y + 30, 175, 770, render::fonts::watermark_font, "tabs", false); {
-		menu_framework::tab(variables::menu::x + 45, variables::menu::y + (260 / 2) - 90, 100, 120, render::fonts::iconfont, "A", menu::current_tab, 0, false);
-		menu_framework::tab(variables::menu::x + 35, variables::menu::y + (260 / 2) + 50, 100, 120, render::fonts::extraicons, "a", menu::current_tab, 1, false);
-		menu_framework::tab(variables::menu::x + 35, variables::menu::y + (260 / 2) + 180, 100, 120, render::fonts::iconfont, "D", menu::current_tab, 2, false);
-		menu_framework::tab(variables::menu::x + 35, variables::menu::y + (260 / 2) + 330, 100, 120, render::fonts::iconfont, "G", menu::current_tab, 3, false);
-		menu_framework::tab(variables::menu::x + 35, variables::menu::y + (260 / 2) + 470, 100, 120, render::fonts::iconfont, "B", menu::current_tab, 4, false);
-	}
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	if (variables::misc::classicmenu)
+	{
+		menu::create(variables::menu::x, variables::menu::y, variables::menu::w, variables::menu::h, color(30, 30, 30), color(45, 45, 45), color(45, 45, 45), "WiinerV2");
 
-	switch (current_tab) {
-	case 0:
-		menu_framework::group_box(variables::menu::x + 190, variables::menu::y + 125, 280, 605, render::fonts::menufont, "Aimbot", true); {
+		render::draw_filled_rect(variables::menu::x, variables::menu::y, 250, 700, color(25, 25,25));
+		render::draw_rect(variables::menu::x + .5, variables::menu::y - .5, 250 - .5, 75 + .5, color(125, 125, 125));
+		
+		render::draw_rect(variables::menu::x + .5, variables::menu::y - 1, 250 - .5, 700 + .5, color(125, 125, 125));
 
-			render::draw_filled_rect(variables::menu::x + 190, variables::menu::y + 36, 620, 75, color(25, 25, 25));
+		render::draw_text_string(variables::menu::x + 70, variables::menu::y + 30, render::fonts::headerfont, "WiinerV2", false, color(255, 255, 255));
 
-			render::draw_rect(variables::menu::x + 190 - 1, variables::menu::y + 36 - 1, 620 + 1, 75 + 1, color(45, 45, 45));
 
-			menu_framework::tab(variables::menu::x + 200, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::weaponicons, "D", menu::weapon_current_tab, 0, false);
-			menu_framework::tab(variables::menu::x + 335, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::weaponicons, "L", menu::weapon_current_tab, 1, false);
-			menu_framework::tab(variables::menu::x + 500, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::weaponicons, "W", menu::weapon_current_tab, 2, false);
-			menu_framework::tab(variables::menu::x + 680, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::weaponicons, "Z", menu::weapon_current_tab, 3, false);
+		render::draw_text_string(variables::menu::x + 20, variables::menu::y + 110, render::fonts::headerfont, "FEATURES", false, color(255, 255, 255));
 
-			switch (weapon_current_tab)
+		render::draw_text_string(variables::menu::x + 20, variables::menu::y + 340, render::fonts::headerfont, "INFO", false, color(255, 255, 255));
+
+		menu::tab(variables::menu::x + 60, variables::menu::y + 370, 10, 35, render::fonts::bodyfont, "Change Logs", "e", menu::current_tab, 5, false);
+
+		
+		menu::tab(variables::menu::x + 30, variables::menu::y + 140, 40, 35, render::fonts::bodyfont, "Legit", "a", menu::current_tab, 0, false);
+		menu::tab(variables::menu::x + 30, variables::menu::y + 180, 40, 35, render::fonts::bodyfont, "Rage", "a", menu::current_tab, 4, false);
+		menu::tab(variables::menu::x + 40, variables::menu::y + 220, 40, 35, render::fonts::bodyfont, "Visuals", "b", menu::current_tab, 1, false);
+		menu::tab(variables::menu::x + 30, variables::menu::y + 260, 40, 35, render::fonts::bodyfont, "Misc", "c", menu::current_tab, 2, false);
+		menu::tab(variables::menu::x + 30, variables::menu::y + 300, 40, 35, render::fonts::bodyfont, "Skins", "d", menu::current_tab, 3, false);
+		
+		switch (current_tab)
+		{
+		case 0:
+
+			render::draw_filled_rect(variables::menu::x + 300, variables::menu::y + 70, 550, 5, color(50, 50, 50));
+			
+			menu::textbutton(variables::menu::x + 300, variables::menu::y + 50, 70 , variables::menu::x + 300,  render::fonts::headerfont, "Pistols", menu::weapon_current_tab, 0);
+			menu::textbutton(variables::menu::x + 385, variables::menu::y + 50, 40, variables::menu::x + 385, render::fonts::headerfont, "SMGS", menu::weapon_current_tab, 1);
+			menu::textbutton(variables::menu::x + 445, variables::menu::y + 50, 60, variables::menu::x + 450, render::fonts::headerfont, "Rifles", menu::weapon_current_tab, 2);
+			menu::textbutton(variables::menu::x + 525, variables::menu::y + 50, 70 , variables::menu::x + 530,  render::fonts::headerfont, "Snipers", menu::weapon_current_tab, 3);
+			menu::textbutton(variables::menu::x + 620, variables::menu::y + 50, 50, variables::menu::x + 600, render::fonts::headerfont, "Other", menu::weapon_current_tab, 4);
+
+			switch(weapon_current_tab)
 			{
 			case 0:
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 145, variables::menu::x + 205, render::fonts::menucontent, "Enabled", variables::aimbots::legit::pistols::aimbotToggle);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "AIMBOT", true, true);
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 165, variables::menu::x + 205, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::pistols::silentaim);
-
-				menu_framework::slider(variables::menu::x + 205, variables::menu::y + 195, 125, render::fonts::menucontent, "Smoothing",
-					variables::aimbots::legit::pistols::smoothing, 1, 6.0f);
-
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 220, variables::menu::x + 205, render::fonts::menucontent, "Random Bones", variables::aimbots::legit::pistols::randombones);
-
-				menu_framework::combo_box(variables::menu::x + 220, variables::menu::y + 240, variables::menu::x + 205, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::lbsIsOpened);
-
-				if (variables::menu::combos::lbsIsOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 260, variables::menu::x + 210, render::fonts::menucontent, "Head", variables::aimbots::legit::pistols::ahead);
-
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 275, variables::menu::x + 210, render::fonts::menucontent, "Chest", variables::aimbots::legit::pistols::achest);
-
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 290, variables::menu::x + 210, render::fonts::menucontent, "Stomach", variables::aimbots::legit::pistols::astomach);
-				}
-
-				menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 320, 285, 410, render::fonts::menufont, "Triggerbot", true);
-
-				menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 355, variables::menu::x + 540, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::pistols::enabled);
-
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 380, 140, render::fonts::menucontent, "Delay", variables::aimbots::trigger::pistols::delay, 0, 400);
-
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 415, 140, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::pistols::hitchance, 0, 100);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::legit::pistols::aimbotToggle);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::pistols::silentaim);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Dynamic Bone Selection", variables::aimbots::legit::pistols::randombones);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Head Priority", variables::aimbots::legit::pistols::headprioirtybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Body Priority", variables::aimbots::legit::pistols::bodyprioritybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Head", variables::aimbots::legit::pistols::ahead);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "Chest", variables::aimbots::legit::pistols::achest);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 290, variables::menu::x + 310, render::fonts::menucontent, "Stomach", variables::aimbots::legit::pistols::astomach);
+				menu::slider(variables::menu::x + 310, variables::menu::y + 320, 150, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::pistols::smoothing, 1, 5);
 				
-				menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 445, variables::menu::x + 540, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::tHOpened);
+				menu::group_box(variables::menu::x + 600, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "TRIGGER", true, true);
 
-				if (variables::menu::combos::tHOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 465, variables::menu::x + 650, render::fonts::menucontent, "Head", variables::aimbots::trigger::pistols::head);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 480, variables::menu::x + 650, render::fonts::menucontent, "Chest", variables::aimbots::trigger::pistols::chest);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 495, variables::menu::x + 650, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::pistols::stomach);
-				}
-
-
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 150, variables::menu::x + 610, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::pistols::enabled);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 170, variables::menu::x + 610, render::fonts::menucontent, "Head", variables::aimbots::trigger::pistols::head);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 190, variables::menu::x + 610, render::fonts::menucontent, "Chest", variables::aimbots::trigger::pistols::chest);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 210, variables::menu::x + 610, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::pistols::stomach);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 240, 150, render::fonts::menucontent, "Delay", variables::aimbots::trigger::pistols::delay, 1, 500);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 270, 150, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::pistols::hitchance, 1, 100);
+				
 				break;
+				
 			case 1:
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 145, variables::menu::x + 205, render::fonts::menucontent, "Enabled", variables::aimbots::legit::smgs::aimbotToggle);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "AIMBOT", true, true);
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 165, variables::menu::x + 205, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::smgs::silentaim);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::legit::smgs::aimbotToggle);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::smgs::silentaim);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Dynamic Bone Selection", variables::aimbots::legit::smgs::randombones);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Head Priority", variables::aimbots::legit::smgs::headprioirtybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Body Priority", variables::aimbots::legit::smgs::bodyprioritybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Head", variables::aimbots::legit::smgs::ahead);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "Chest", variables::aimbots::legit::smgs::achest);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 290, variables::menu::x + 310, render::fonts::menucontent, "Stomach", variables::aimbots::legit::smgs::astomach);
+				menu::slider(variables::menu::x + 310, variables::menu::y + 320, 150, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::smgs::smoothing, 1, 5);
 
-				menu_framework::slider(variables::menu::x + 205, variables::menu::y + 195, 125, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::smgs::smoothing, 1.0f, 6.0f);
+				menu::group_box(variables::menu::x + 600, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "TRIGGER", true, true);
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 220, variables::menu::x + 205, render::fonts::menucontent, "Random Bones", variables::aimbots::legit::smgs::randombones);
-
-				menu_framework::combo_box(variables::menu::x + 220, variables::menu::y + 240, variables::menu::x + 205, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::lbsIsOpened);
-
-				if (variables::menu::combos::lbsIsOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 260, variables::menu::x + 210, render::fonts::menucontent, "Head", variables::aimbots::legit::smgs::ahead);
-
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 275, variables::menu::x + 210, render::fonts::menucontent, "Chest", variables::aimbots::legit::smgs::achest);
-
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 290, variables::menu::x + 210, render::fonts::menucontent, "Stomach", variables::aimbots::legit::smgs::astomach);
-				}
-
-				menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 320, 285, 410, render::fonts::menufont, "Triggerbot", true);
-
-				menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 355, variables::menu::x + 540, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::smgs::enabled);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 150, variables::menu::x + 610, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::smgs::enabled);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 170, variables::menu::x + 610, render::fonts::menucontent, "Head", variables::aimbots::trigger::smgs::head);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 190, variables::menu::x + 610, render::fonts::menucontent, "Chest", variables::aimbots::trigger::smgs::chest);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 210, variables::menu::x + 610, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::smgs::stomach);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 240, 150, render::fonts::menucontent, "Delay", variables::aimbots::trigger::smgs::delay, 1, 500);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 270, 150, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::smgs::hitchance, 1, 100);
 				
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 380, 140, render::fonts::menucontent, "Delay", variables::aimbots::trigger::smgs::delay, 0, 400);
-
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 415, 140, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::smgs::hitchance, 0, 100);
-
-				menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 445, variables::menu::x + 540, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::tHOpened);
-
-				if (variables::menu::combos::tHOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 465, variables::menu::x + 650, render::fonts::menucontent, "Head", variables::aimbots::trigger::smgs::head);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 480, variables::menu::x + 650, render::fonts::menucontent, "Chest", variables::aimbots::trigger::smgs::chest);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 495, variables::menu::x + 650, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::smgs::stomach);
-				}
-
 				break;
+				
 			case 2:
 
-				menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 320, 285, 410, render::fonts::menufont, "Triggerbot", true);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "AIMBOT", true, true);
 
-				menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 355, variables::menu::x + 540, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::rifles::enabled);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::legit::rifles::aimbotToggle);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::rifles::silentaim);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Dynamic Bone Selection", variables::aimbots::legit::rifles::randombones);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Head Priority", variables::aimbots::legit::rifles::headprioirtybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Body Priority", variables::aimbots::legit::rifles::bodyprioritybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Head", variables::aimbots::legit::rifles::ahead);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "Chest", variables::aimbots::legit::rifles::achest);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 290, variables::menu::x + 310, render::fonts::menucontent, "Stomach", variables::aimbots::legit::rifles::astomach);
+				menu::slider(variables::menu::x + 310, variables::menu::y + 320, 150, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::rifles::smoothing, 1, 5);
 
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 380, 140, render::fonts::menucontent, "Delay", variables::aimbots::trigger::rifles::delay, 0, 400);
+				menu::group_box(variables::menu::x + 600, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "TRIGGER", true, true);
 
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 415, 140, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::rifles::hitchance, 0, 100);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 150, variables::menu::x + 610, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::rifles::enabled);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 170, variables::menu::x + 610, render::fonts::menucontent, "Head", variables::aimbots::trigger::rifles::head);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 190, variables::menu::x + 610, render::fonts::menucontent, "Chest", variables::aimbots::trigger::rifles::chest);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 210, variables::menu::x + 610, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::rifles::stomach);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 240, 150, render::fonts::menucontent, "Delay", variables::aimbots::trigger::rifles::delay, 1, 500);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 270, 150, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::rifles::hitchance, 1, 100);
+				
+				break;
+				
+			case 3:
 
-				menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 445, variables::menu::x + 540, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::tHOpened);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "AIMBOT", true, true);
 
-				if (variables::menu::combos::tHOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 465, variables::menu::x + 650, render::fonts::menucontent, "Head", variables::aimbots::trigger::rifles::head);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::legit::snipers::aimbotToggle);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::snipers::silentaim);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Dynamic Bone Selection", variables::aimbots::legit::snipers::randombones);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Head Priority", variables::aimbots::legit::snipers::headprioirtybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Body Priority", variables::aimbots::legit::snipers::bodyprioritybone);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Head", variables::aimbots::legit::snipers::ahead);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "Chest", variables::aimbots::legit::snipers::achest);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 290, variables::menu::x + 310, render::fonts::menucontent, "Stomach", variables::aimbots::legit::snipers::astomach);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 310, variables::menu::x + 310, render::fonts::menucontent, "Scope Check", variables::aimbots::legit::snipers::aimcheck);
+				menu::slider(variables::menu::x + 310, variables::menu::y + 340, 150, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::snipers::smoothing, 1, 5);
 
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 480, variables::menu::x + 650, render::fonts::menucontent, "Chest", variables::aimbots::trigger::rifles::chest);
+				menu::group_box(variables::menu::x + 600, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "TRIGGER", true, true);
 
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 495, variables::menu::x + 650, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::rifles::stomach);
-				}
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 150, variables::menu::x + 610, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::snipers::enabled);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 170, variables::menu::x + 610, render::fonts::menucontent, "Head", variables::aimbots::trigger::snipers::head);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 190, variables::menu::x + 610, render::fonts::menucontent, "Chest", variables::aimbots::trigger::snipers::chest);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 210, variables::menu::x + 610, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::snipers::stomach);
+				menu::check_box(variables::menu::x + 610, variables::menu::y + 230, variables::menu::x + 610, render::fonts::menucontent, "Scope Check", variables::aimbots::trigger::snipers::scopeCheck);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 260, 150, render::fonts::menucontent, "Delay", variables::aimbots::trigger::snipers::delay, 1, 500);
+				menu::slider(variables::menu::x + 610, variables::menu::y + 290, 150, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::snipers::hitchance, 1, 100);
+				
+				break;
+				
+			case 4:
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 145, variables::menu::x + 205, render::fonts::menucontent, "Enabled", variables::aimbots::legit::rifles::aimbotToggle);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "OTHER", true, true);
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 165, variables::menu::x + 205, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::rifles::silentaim);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Recoil Control", variables::aimbots::legit::rifles::rcs);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Recoil Crosshair", variables::aimbots::legit::crosshair);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Backtrack", variables::aimbots::backtrack);
+				
+				break;
+			}
+			
+			break;
+			
+		case 1:
 
-				menu_framework::slider(variables::menu::x + 205, variables::menu::y + 195, 125, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::rifles::smoothing, 1.0f, 6.0f);
+			render::draw_filled_rect(variables::menu::x + 300, variables::menu::y + 70, 550, 5, color(50, 50, 50));
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 220, variables::menu::x + 205, render::fonts::menucontent, "Random Bones", variables::aimbots::legit::rifles::randombones);
+			menu::textbutton(variables::menu::x + 300, variables::menu::y + 50, 30, variables::menu::x + 300, render::fonts::headerfont, "ESP", menu::visuals_current_tab, 0);
+			menu::textbutton(variables::menu::x + 345, variables::menu::y + 50, 130, variables::menu::x + 345, render::fonts::headerfont, "Chams Visible", menu::visuals_current_tab, 1);
+			menu::textbutton(variables::menu::x + 490, variables::menu::y + 50, 170, variables::menu::x + 490, render::fonts::headerfont, "Chams Non Visible", menu::visuals_current_tab, 2);
+			menu::textbutton(variables::menu::x + 675, variables::menu::y + 50, 40, variables::menu::x + 675, render::fonts::headerfont, "Glow", menu::visuals_current_tab, 3);
+			menu::textbutton(variables::menu::x + 730, variables::menu::y + 50, 105, variables::menu::x + 730, render::fonts::headerfont, "Localplayer", menu::visuals_current_tab, 4);
 
-				menu_framework::combo_box(variables::menu::x + 220, variables::menu::y + 240, variables::menu::x + 205, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::lbsIsOpened);
+			switch (visuals_current_tab)
+			{
+			case 0:
 
-				if (variables::menu::combos::lbsIsOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 260, variables::menu::x + 210, render::fonts::menucontent, "Head", variables::aimbots::legit::rifles::ahead);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "ESP", true, true);
 
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 275, variables::menu::x + 210, render::fonts::menucontent, "Chest", variables::aimbots::legit::rifles::achest);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::Visuals::esp::espToggle);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Box", variables::Visuals::esp::box);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Name", variables::Visuals::esp::name);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Health Bar", variables::Visuals::esp::healthbar);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Shield Bar", variables::Visuals::esp::shieldbar);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Weapon Name", variables::Visuals::esp::weaponesp);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "Bone Visible", variables::Visuals::esp::bonevisible);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 290, variables::menu::x + 310, render::fonts::menucontent, "Bone Always", variables::Visuals::esp::bonealways);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 310, variables::menu::x + 310, render::fonts::menucontent, "Health Color Override", variables::Visuals::esp::hpoverridecheck);
+				menu::clr_slider(variables::menu::x + 510, variables::menu::y + 311, variables::menu::x + 510, render::fonts::menucontent, "", variables::chamopened, variables::colors::esp::o_red, variables::colors::esp::o_green, variables::colors::esp::o_blue);
+				
+				menu::slider(variables::menu::x + 310, variables::menu::y + 340, 150, render::fonts::menucontent, "Override Health", variables::colors::esp::hpoverride, 1, 100);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 370, variables::menu::x + 310, render::fonts::menucontent, "Backtrack Skeleton", variables::Visuals::esp::backtrackskeleton);
+				
+				break;
 
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 290, variables::menu::x + 210, render::fonts::menucontent, "Stomach", variables::aimbots::legit::rifles::astomach);
-					
-				}
+			case 1:
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "ENEMY", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::Visuals::chams::chamsvisible);
+
+				menu::clr_slider(variables::menu::x + 400, variables::menu::y + 150, variables::menu::x + 400, render::fonts::menucontent, "", variables::chamopened, variables::colors::cFloats::c_red, variables::colors::cFloats::c_green, variables::colors::cFloats::c_blue);
+				
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Normal Material", variables::colors::cMats::m_normal);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Flat Material", variables::colors::cMats::m_flat);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Blue Uber Material", variables::colors::cMats::m_ghost);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Wireframe", variables::Visuals::chams::wireframe);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Backtrack Chams", variables::Visuals::chams::backtrackchams);
+
+				menu::clr_slider(variables::menu::x + 460, variables::menu::y + 251, variables::menu::x + 460, render::fonts::menucontent, "", variables::bchamsopened, variables::colors::cFloats::b_red, variables::colors::cFloats::b_green, variables::colors::cFloats::b_blue);
+
+				menu::group_box(variables::menu::x + 600, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "TEAMATE", true, true);
+				
+				break;
+
+			case 2:
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "ENEMY", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::Visuals::chams::chamsxqz);
+				
+				menu::clr_slider(variables::menu::x + 400, variables::menu::y + 150, variables::menu::x + 400, render::fonts::menucontent, "", variables::chamopened, variables::colors::cFloats::xqz_c_red, variables::colors::cFloats::xqz_c_green, variables::colors::cFloats::xqz_c_blue);
+				
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Normal Material", variables::colors::cMats::xqz_m_normal);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Flat Material", variables::colors::cMats::xqz_m_flat);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Blue Uber Material", variables::colors::cMats::xqz_m_ghost);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Wireframe", variables::Visuals::chams::xqz_wireframe);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Backtrack Chams", variables::Visuals::chams::backtrackchams);
+
+				menu::clr_slider(variables::menu::x + 460, variables::menu::y + 251, variables::menu::x + 460, render::fonts::menucontent, "", variables::bchamsopened, variables::colors::cFloats::b_red, variables::colors::cFloats::b_green, variables::colors::cFloats::b_blue);
+				
+				menu::group_box(variables::menu::x + 600, variables::menu::y + 100, 265, 550, render::fonts::headerfont, "TEAMATE", true, true);
+				
+				break;
+				
+			case 3:
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "GLOW", true, true);
+
+				break;
+				
+			case 4:
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "LOCALPLAYER", true, true);
+				
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Hand Chams Enabled", variables::Visuals::chams::armschams);
+
+				menu::clr_slider(variables::menu::x + 485, variables::menu::y + 150, variables::menu::x + 485, render::fonts::menucontent, "", variables::chamopened, variables::colors::cMats::arms::c_red, variables::colors::cMats::arms::c_green, variables::colors::cMats::arms::c_blue);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Hand Chams Normal Material", variables::colors::cMats::arms::m_normal);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Hand Chams Flat Material", variables::colors::cMats::arms::m_flat);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Hand Chams Blue Uber Material", variables::colors::cMats::arms::m_crystal);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Hand Chams Wireframe", variables::Visuals::chams::hands_wireframe);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Flip Knife Hand", variables::misc::knifehandflip);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "No Hands", variables::Visuals::chams::nohands);
+
+				
+				break;
+			}
+			
+			break;
+			
+		case 2:
+
+			render::draw_filled_rect(variables::menu::x + 300, variables::menu::y + 70, 550, 5, color(50, 50, 50));
+
+			menu::textbutton(variables::menu::x + 300, variables::menu::y + 50, 70, variables::menu::x + 300, render::fonts::headerfont, "General", menu::misc_current_tab, 0);			
+			menu::textbutton(variables::menu::x + 385, variables::menu::y + 50, 60, variables::menu::x + 385, render::fonts::headerfont, "Config", menu::misc_current_tab, 1);
+
+			switch (misc_current_tab)
+			{
+			case 0:
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "GENERAL", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Dynamic Clan Tag", variables::misc::dtag);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Static Clan Tag", variables::misc::stag);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Perfect Bunnyhop", variables::misc::pbunny);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Legit Bunnyhop", variables::misc::lbunny);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Antiflash", variables::misc::antiflash);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 250, variables::menu::x + 310, render::fonts::menucontent, "Watermark", variables::misc::watermark);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 270, variables::menu::x + 310, render::fonts::menucontent, "Mouse Strafer", variables::misc::autostrafe);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 290, variables::menu::x + 310, render::fonts::menucontent, "Thirdperson", variables::misc::thirdperson);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 310, variables::menu::x + 310, render::fonts::menucontent, "Viewmodel FOV Override", variables::fov::fovOveride);
+				menu::slider(variables::menu::x + 310, variables::menu::y + 340, 150, render::fonts::menucontent, "Viewmodel FOV Override Amount", variables::fov::fovamount, 0, 90);
+				break;
+
+			case 1:
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "CONFIG", true, true);
+
+				break;
+			}
+			
+			break;
+			
+		case 3:
+
+			break;
+
+		case 4:
+
+			render::draw_filled_rect(variables::menu::x + 300, variables::menu::y + 70, 550, 5, color(50, 50, 50));
+
+			menu::textbutton(variables::menu::x + 300, variables::menu::y + 50, 70, variables::menu::x + 300, render::fonts::headerfont, "Pistols", menu::rage_weapon_current_tab, 0);
+			menu::textbutton(variables::menu::x + 385, variables::menu::y + 50, 130, variables::menu::x + 385, render::fonts::headerfont, "Heavy Pistols", menu::rage_weapon_current_tab, 1);
+			menu::textbutton(variables::menu::x + 530, variables::menu::y + 50, 50, variables::menu::x + 530, render::fonts::headerfont, "Scout", menu::rage_weapon_current_tab, 2);
+			menu::textbutton(variables::menu::x + 595, variables::menu::y + 50, 40, variables::menu::x + 595, render::fonts::headerfont, "Auto", menu::rage_weapon_current_tab, 3);
+			menu::textbutton(variables::menu::x + 650, variables::menu::y + 50, 30, variables::menu::x + 650, render::fonts::headerfont, "AWP", menu::rage_weapon_current_tab, 4);
+			menu::textbutton(variables::menu::x + 695, variables::menu::y + 50, 20, variables::menu::x + 695, render::fonts::headerfont, "AA", menu::rage_weapon_current_tab, 5);
+			menu::textbutton(variables::menu::x + 730, variables::menu::y + 50, 50, variables::menu::x + 730, render::fonts::headerfont, "Other", menu::rage_weapon_current_tab, 6);
+
+			switch(rage_weapon_current_tab)
+			{
+			case 0:
+
+				///////////////////////////////////////////////
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "PISTOLS", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::rage::pistols::ragebot);
+
+				break;
+
+			case 1:
+
+				///////////////////////////////////////////////
+				///
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "HEAVY PISTOLS", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::rage::h_pistols::ragebot);
+
+				break;
+
+			case 2:
+
+				///////////////////////////////////////////////
+				///
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "SCOUT", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::rage::scout::ragebot);
 
 				break;
 
 			case 3:
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 145, variables::menu::x + 205, render::fonts::menucontent, "Enabled", variables::aimbots::legit::snipers::aimbotToggle);
+				///////////////////////////////////////////////
 
-				//	menu_framework::keybind(variables::menu::x + 400, variables::menu::y + 145, variables::menu::x + 400, render::fonts::menucontent, "Bind", variables::aimbots::legit::snipers::keybindings::aimbotbind);
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "AUTOS", true, true);
 
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 165, variables::menu::x + 205, render::fonts::menucontent, "Silent Aim", variables::aimbots::legit::snipers::silentaim);
-
-				menu_framework::slider(variables::menu::x + 205, variables::menu::y + 195, 125, render::fonts::menucontent, "Smoothing", variables::aimbots::legit::snipers::smoothing, 1.0f, 6.0f);
-
-				menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 220, variables::menu::x + 205, render::fonts::menucontent, "Random Bones", variables::aimbots::legit::snipers::randombones);
-
-				menu_framework::combo_box(variables::menu::x + 220, variables::menu::y + 240, variables::menu::x + 205, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::lbsIsOpened);
-
-				if (variables::menu::combos::lbsIsOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 260, variables::menu::x + 210, render::fonts::menucontent, "Head", variables::aimbots::legit::snipers::ahead);
-
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 275, variables::menu::x + 210, render::fonts::menucontent, "Chest", variables::aimbots::legit::snipers::achest);
-
-					menu_framework::textbutton(variables::menu::x + 210, variables::menu::y + 290, variables::menu::x + 210, render::fonts::menucontent, "Stomach", variables::aimbots::legit::snipers::astomach);
-
-					menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 330, variables::menu::x + 205, render::fonts::menucontent, "Check for scoped", variables::aimbots::legit::snipers::randombones);
-					
-				}
-
-				else
-				{
-					menu_framework::check_box(variables::menu::x + 220, variables::menu::y + 270, variables::menu::x + 205, render::fonts::menucontent, "Check for scoped", variables::aimbots::legit::snipers::randombones);
-				}
-
-			
-
-				menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 320, 285, 410, render::fonts::menufont, "Triggerbot", true);
-
-				menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 355, variables::menu::x + 540, render::fonts::menucontent, "Enabled", variables::aimbots::trigger::snipers::enabled);
-
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 380, 140, render::fonts::menucontent, "Delay", variables::aimbots::trigger::snipers::delay, 0, 400);
-
-				menu_framework::slider(variables::menu::x + 540, variables::menu::y + 415, 140, render::fonts::menucontent, "Hitchance", variables::aimbots::trigger::snipers::hitchance, 0, 100);
-
-				menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 445, variables::menu::x + 540, 70, render::fonts::menucontent, "Hitboxes...", variables::menu::combos::tHOpened);
-
-				if (variables::menu::combos::tHOpened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 465, variables::menu::x + 650, render::fonts::menucontent, "Head", variables::aimbots::trigger::snipers::head);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 480, variables::menu::x + 650, render::fonts::menucontent, "Chest", variables::aimbots::trigger::snipers::chest);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 495, variables::menu::x + 650, render::fonts::menucontent, "Stomach", variables::aimbots::trigger::snipers::stomach);
-				}
-				break;
-			}
-		}
-
-
-
-		menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 125, 285, 160, render::fonts::menufont, "Other", true);
-
-		menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 145, variables::menu::x + 540, render::fonts::menucontent, "Recoil Control", variables::aimbots::legit::rcs);
-
-		menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 165, variables::menu::x + 540, render::fonts::menucontent, "Recoil Crosshair", variables::aimbots::legit::crosshair);
-
-		break;
-
-
-
-	case 1:
-
-
-		render::draw_filled_rect(variables::menu::x + 190, variables::menu::y + 36, 620, 75, color(25, 25, 25));
-
-		render::draw_rect(variables::menu::x + 190 - 1, variables::menu::y + 36 - 1, 620 + 1, 75 + 1, color(45, 45, 45));
-
-		menu_framework::tab(variables::menu::x + 200, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::Sweaponicons, "D", menu::rage_weapon_current_tab, 0, false);
-		menu_framework::tab(variables::menu::x + 285, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::Sweaponicons, "J", menu::rage_weapon_current_tab, 1, false);
-		menu_framework::tab(variables::menu::x + 410, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::Sweaponicons, "a", menu::rage_weapon_current_tab, 2, false);
-		menu_framework::tab(variables::menu::x + 540, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::Sweaponicons, "Y", menu::rage_weapon_current_tab, 3, false);
-		menu_framework::tab(variables::menu::x + 680, variables::menu::y + (260 / 2) - 130, 100, 120, render::fonts::Sweaponicons, "Z", menu::rage_weapon_current_tab, 4, false);
-
-
-		menu_framework::group_box(variables::menu::x + 190, variables::menu::y + 125, 285, 590, render::fonts::menufont, "Ragebot", true); {
-
-		menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 125, 285, 410, render::fonts::menufont, "AntiAim", true);
-		{
-			menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 145, variables::menu::x + 540, render::fonts::menucontent, "Enabled", variables::antiaim::enabled);
-
-			menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 175, variables::menu::x + 540, 50,render::fonts::menucontent, "Pitch", variables::menu::combos::pisopened);
-			
-			if (variables::menu::combos::pisopened == true)
-			{
-				menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 195, variables::menu::x + 545, render::fonts::menucontent, "Up", variables::antiaim::pUp);
-
-				menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 210, variables::menu::x + 545, render::fonts::menucontent, "Down", variables::antiaim::pDown);
-
-				menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 240, variables::menu::x + 540, 50, render::fonts::menucontent, "Yaw", variables::menu::combos::yisopened);
-
-				if (variables::menu::combos::yisopened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 260, variables::menu::x + 545, render::fonts::menucontent, "Static", variables::antiaim::yStatic);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 275, variables::menu::x + 545, render::fonts::menucontent, "Jitter", variables::antiaim::yJitter);
-				}
-				
-			}
-			else
-			{
-				menu_framework::combo_box(variables::menu::x + 555, variables::menu::y + 205, variables::menu::x + 540, 50, render::fonts::menucontent, "Yaw", variables::menu::combos::yisopened);
-
-				if (variables::menu::combos::yisopened == true)
-				{
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 225, variables::menu::x + 545, render::fonts::menucontent, "Static", variables::antiaim::yStatic);
-
-					menu_framework::textbutton(variables::menu::x + 545, variables::menu::y + 240, variables::menu::x + 545, render::fonts::menucontent, "Jitter", variables::antiaim::yJitter);
-				}
-				
-			}
-		}
-		
-		menu_framework::group_box(variables::menu::x + 525, variables::menu::y + 550, 285, 163, render::fonts::menufont, "Other", true);
-		{
-			menu_framework::check_box(variables::menu::x + 555, variables::menu::y + 570, variables::menu::x + 540, render::fonts::menucontent, "Airstuck", variables::misc::airstuck);
-		}
-
-		
-			switch (rage_weapon_current_tab)
-			{
-			case 0:
-
-				break;
-
-			case 1:
-
-				break;
-
-			case 2:
-
-				break;
-
-			case 3:
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::rage::autos::ragebot);
 
 				break;
 
 			case 4:
 
+				///////////////////////////////////////////////
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "AWP", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::aimbots::rage::awp::ragebot);
+
+				break;
+
+			case 5:
+
+				///////////////////////////////////////////////
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "ANTI-AIM", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Enabled", variables::antiaim::enabled);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 170, variables::menu::x + 310, render::fonts::menucontent, "Up", variables::antiaim::pUp);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 190, variables::menu::x + 310, render::fonts::menucontent, "Down", variables::antiaim::pDown);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 210, variables::menu::x + 310, render::fonts::menucontent, "Static", variables::antiaim::yStatic);
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 230, variables::menu::x + 310, render::fonts::menucontent, "Jitter", variables::antiaim::yJitter);
+
+				break;
+
+			case 6:
+
+				///////////////////////////////////////////////
+
+				menu::group_box(variables::menu::x + 300, variables::menu::y + 100, 550, 550, render::fonts::headerfont, "OTHER", true, true);
+
+				menu::check_box(variables::menu::x + 310, variables::menu::y + 150, variables::menu::x + 310, render::fonts::menucontent, "Backtrack", variables::aimbots::backtrack);
+				
 				break;
 			}
-
-			break;
-	case 2:
-		menu_framework::group_box(variables::menu::x + 200, variables::menu::y + 50, 285, 260, render::fonts::menufont, "ESP", true); {
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 80, variables::menu::x + 215, render::fonts::menucontent, "Enabled", variables::Visuals::esp::espToggle);
-
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 100, variables::menu::x + 215, render::fonts::menucontent, "Box", variables::Visuals::esp::box);
-
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 120, variables::menu::x + 215, render::fonts::menucontent, "Name", variables::Visuals::esp::name);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 140, variables::menu::x + 215, render::fonts::menucontent, "Health Bar", variables::Visuals::esp::healthbar);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 160, variables::menu::x + 215, render::fonts::menucontent, "Shield Bar", variables::Visuals::esp::shieldbar);
-
-			menu_framework::combo_box(variables::menu::x + 230, variables::menu::y + 180, variables::menu::x + 215, 50, render::fonts::menucontent, "BoneESP", variables::menu::combos::boneComboToggle);
-
-			if (variables::menu::combos::boneComboToggle)
-			{
-
-				if (variables::Visuals::esp::bonealways == true)
-				{
-					variables::Visuals::esp::bonevisible = false;
-				}
-
-				if (variables::Visuals::esp::bonevisible == true)
-				{
-					variables::Visuals::esp::bonealways = false;
-				}
-
-				menu_framework::textbutton(variables::menu::x + 220, variables::menu::y + 200, variables::menu::x + 220, render::fonts::menucontent, "Visible", variables::Visuals::esp::bonevisible);
-
-				menu_framework::textbutton(variables::menu::x + 220, variables::menu::y + 215, variables::menu::x + 220, render::fonts::menucontent, "Always", variables::Visuals::esp::bonealways);
-
-				menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 240, variables::menu::x + 215, render::fonts::menucontent, "Weapon Icons", variables::Visuals::esp::weaponesp);
-
-			}
-			else
-			{
-				menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 210, variables::menu::x + 215, render::fonts::menucontent, "Weapon Icons", variables::Visuals::esp::weaponesp);
-
-			}
-
-
-			menu_framework::group_box(variables::menu::x + 500, variables::menu::y + 50, 285, 400, render::fonts::menufont, "Chams", true);
-
-			menu_framework::check_box(variables::menu::x + 530, variables::menu::y + 80, variables::menu::x + 515, render::fonts::menucontent, "Enabled", variables::Visuals::chams::chams);
-
-			menu_framework::combo_box(variables::menu::x + 530, variables::menu::y + 100, variables::menu::x + 515, 70, render::fonts::menucontent, "Chams Mode", variables::menu::combos::cCOpened);
-
-			if (variables::menu::combos::cCOpened)
-			{
-
-				if (variables::Visuals::chams::chamsvisible == true)
-				{
-					variables::Visuals::chams::chamsalways = false;
-					variables::Visuals::chams::chamsxqz = false;
-				}
-
-				if (variables::Visuals::chams::chamsalways == true)
-				{
-					variables::Visuals::chams::chamsvisible = false;
-					variables::Visuals::chams::chamsxqz = false;
-				}
-
-				if (variables::Visuals::chams::chamsxqz == true)
-				{
-					variables::Visuals::chams::chamsalways = false;
-					variables::Visuals::chams::chamsvisible = false;
-				}
-				
-				menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 120, variables::menu::x + 520, render::fonts::menucontent, "Chams Visible", variables::Visuals::chams::chamsvisible);
-
-				menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 135, variables::menu::x + 520, render::fonts::menucontent, "Chams Always", variables::Visuals::chams::chamsalways);
-
-				menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 150, variables::menu::x + 520, render::fonts::menucontent, "Chams XQZ", variables::Visuals::chams::chamsxqz);
-
-				menu_framework::combo_box(variables::menu::x + 530, variables::menu::y + 185, variables::menu::x + 515, 100, render::fonts::menucontent, "Chams Material", variables::menu::combos::c_mOpened);
-
-				if (variables::menu::combos::c_mOpened == true)
-				{
-					if (variables::colors::cMats::m_normal == true)
-					{
-						variables::colors::cMats::m_flat = false;
-						variables::colors::cMats::m_ghost = false;
-					}
-
-					if (variables::colors::cMats::m_flat == true)
-					{
-						variables::colors::cMats::m_ghost = false;
-						variables::colors::cMats::m_normal = false;
-					}
-
-					if (variables::colors::cMats::m_ghost == true)
-					{
-						variables::colors::cMats::m_flat = false;
-						variables::colors::cMats::m_normal = false;
-					}
-					
-					menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 205, variables::menu::x + 520, render::fonts::menucontent, "Normal", variables::colors::cMats::m_normal);
-
-					menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 220, variables::menu::x + 520, render::fonts::menucontent, "Flat", variables::colors::cMats::m_flat);
-
-					menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 235, variables::menu::x + 520, render::fonts::menucontent, "Crystal", variables::colors::cMats::m_ghost);			
-				}
-				
-				if (variables::menu::combos::c_mOpened)
-				{
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 300, 125, render::fonts::menucontent, "Chams Visible Color", variables::colors::cFloats::c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 310, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 320, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_blue, 0.0f, 255.0f, 3);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 350, 125, render::fonts::menucontent, "Chams Non Visible Color", variables::colors::cFloats::xqz_c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 360, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 370, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_blue, 0.0f, 255.0f, 3);
-				}
-
-				else
-				{
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 220, 125, render::fonts::menucontent, "Chams Visible Color", variables::colors::cFloats::c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 230, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 240, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_blue, 0.0f, 255.0f, 3);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 270, 125, render::fonts::menucontent, "Chams Non Visible Color", variables::colors::cFloats::xqz_c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 280, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 290, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_blue, 0.0f, 255.0f, 3);
-				}
-				
-			}
-			else
-			{
-
-				menu_framework::combo_box(variables::menu::x + 530, variables::menu::y + 140, variables::menu::x + 515, 100, render::fonts::menucontent, "Chams Material", variables::menu::combos::c_mOpened);
-				
-				if (variables::menu::combos::c_mOpened)
-				{
-
-					if (variables::colors::cMats::m_normal == true)
-					{
-						variables::colors::cMats::m_flat = false;
-						variables::colors::cMats::m_ghost = false;
-					}
-
-					if (variables::colors::cMats::m_flat == true)
-					{
-						variables::colors::cMats::m_ghost = false;
-						variables::colors::cMats::m_normal = false;
-					}
-
-					if (variables::colors::cMats::m_ghost == true)
-					{
-						variables::colors::cMats::m_flat = false;
-						variables::colors::cMats::m_normal = false;
-					}
-					
-					menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 160, variables::menu::x + 520, render::fonts::menucontent, "Normal", variables::colors::cMats::m_normal);
-
-					menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 175, variables::menu::x + 520, render::fonts::menucontent, "Flat", variables::colors::cMats::m_flat);
-
-					menu_framework::textbutton(variables::menu::x + 520, variables::menu::y + 190, variables::menu::x + 520, render::fonts::menucontent, "Crystal", variables::colors::cMats::m_ghost);
-					
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 260, 125, render::fonts::menucontent, "Chams Visible Color", variables::colors::cFloats::c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 270, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 280, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_blue, 0.0f, 255.0f, 3);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 310, 125, render::fonts::menucontent, "Chams Non Visible Color", variables::colors::cFloats::xqz_c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 320, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 330, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_blue, 0.0f, 255.0f, 3);
-				}
-
-				else
-				{
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 180, 125, render::fonts::menucontent, "Chams Visible Color", variables::colors::cFloats::c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 190, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 200, 125, render::fonts::menucontent, "", variables::colors::cFloats::c_blue, 0.0f, 255.0f, 3);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 230, 125, render::fonts::menucontent, "Chams Non Visible Color", variables::colors::cFloats::xqz_c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 240, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 250, 125, render::fonts::menucontent, "", variables::colors::cFloats::xqz_c_blue, 0.0f, 255.0f, 3);
-				}
-				
-			}
-
-			menu_framework::group_box(variables::menu::x + 200, variables::menu::y + 330, 285, 395, render::fonts::menufont, "Localplayer", true); {
-
-				menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 360, variables::menu::x + 215, render::fonts::menucontent, "No Hands", variables::Visuals::chams::nohands);
-
-				menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 380, variables::menu::x + 215, render::fonts::menucontent, "Hand Chams", variables::Visuals::chams::armschams);
-
-				menu_framework::combo_box(variables::menu::x + 230, variables::menu::y + 410, variables::menu::x + 215, 100, render::fonts::menucontent, "Hand Chams Material", variables::menu::combos::a_Combo);		
-
-				if (variables::menu::combos::a_Combo == true)
-				{
-
-					if (variables::colors::cMats::arms::m_normal == true)
-					{
-						variables::colors::cMats::arms::m_crystal = false;
-						variables::colors::cMats::arms::m_flat = false;
-					}
-
-					if (variables::colors::cMats::arms::m_crystal == true)
-					{
-						variables::colors::cMats::arms::m_normal = false;
-						variables::colors::cMats::arms::m_flat = false;
-					}
-
-					if (variables::colors::cMats::arms::m_flat == true)
-					{
-						variables::colors::cMats::arms::m_crystal = false;
-						variables::colors::cMats::arms::m_normal = false;
-					}
-					
-					menu_framework::textbutton(variables::menu::x + 220, variables::menu::y + 430, variables::menu::x + 220, render::fonts::menucontent, "Normal", variables::colors::cMats::arms::m_normal);
-
-					menu_framework::textbutton(variables::menu::x + 220, variables::menu::y + 445, variables::menu::x + 220, render::fonts::menucontent, "Flat", variables::colors::cMats::arms::m_flat);
-
-					menu_framework::textbutton(variables::menu::x + 220, variables::menu::y + 460, variables::menu::x + 220, render::fonts::menucontent, "Crystal", variables::colors::cMats::arms::m_crystal);
-
-					menu_framework::clr_slider(variables::menu::x + 215, variables::menu::y + 530, 125, render::fonts::menucontent, "Arm Chams Color", variables::colors::cMats::arms::c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 215, variables::menu::y + 540, 125, render::fonts::menucontent, "", variables::colors::cMats::arms::c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 215, variables::menu::y + 550, 125, render::fonts::menucontent, "", variables::colors::cMats::arms::c_blue, 0.0f, 255.0f, 3);		
-				}
-				else
-				{
-					menu_framework::clr_slider(variables::menu::x + 215, variables::menu::y + 450, 125, render::fonts::menucontent, "Arm Chams Color", variables::colors::cMats::arms::c_red, 0.0f, 255.0f, 1);
-
-					menu_framework::clr_slider(variables::menu::x + 215, variables::menu::y + 460, 125, render::fonts::menucontent, "", variables::colors::cMats::arms::c_green, 0.0f, 255.0f, 2);
-
-					menu_framework::clr_slider(variables::menu::x + 215, variables::menu::y + 470, 125, render::fonts::menucontent, "", variables::colors::cMats::arms::c_blue, 0.0f, 255.0f, 3);
-				}
-				
-			}
-
-			menu_framework::group_box(variables::menu::x + 500, variables::menu::y + 465, 285, 260, render::fonts::menufont, "World", true);
-
+			
 			break;
 
-	case 3:
-		menu_framework::group_box(variables::menu::x + 200, variables::menu::y + 50, 285, 545, render::fonts::menufont, "Misc", true); {
+		case 5:
 
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 80, variables::menu::x + 215, render::fonts::menucontent, "Perfect Bunny Hop", variables::misc::pbunny);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 100, variables::menu::x + 215, render::fonts::menucontent, "Legit Bunny Hop", variables::misc::lbunny);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 120, variables::menu::x + 215, render::fonts::menucontent, "Antiflash", variables::misc::antiflash);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 140, variables::menu::x + 215, render::fonts::menucontent, "Dynamic Clantag", variables::misc::dtag);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 160, variables::menu::x + 215, render::fonts::menucontent, "Static Clantag", variables::misc::stag);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 180, variables::menu::x + 215, render::fonts::menucontent, "Field of View Override", variables::fov::fovOveride);
-
-			menu_framework::slider(variables::menu::x + 215, variables::menu::y + 205, 140, render::fonts::menucontent, "Fov Override Amount", variables::fov::fovamount, 1.f, 120.0f);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 230, variables::menu::x + 215, render::fonts::menucontent, "Watermark", variables::misc::watermark);
-
-			menu_framework::check_box(variables::menu::x + 230, variables::menu::y + 250, variables::menu::x + 215, render::fonts::menucontent, "Mouse Strafer", variables::misc::autostrafe);
-
-			menu_framework::group_box(variables::menu::x + 500, variables::menu::y + 50, 285, 260, render::fonts::menufont, "Config", true);
-
-			menu_framework::group_box(variables::menu::x + 500, variables::menu::y + 335, 285, 260, render::fonts::menufont, "Settings", true);
-
-			menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 365, 125, render::fonts::menucontent, "Menu Color", variables::colors::menu::floats::r, 0.0f, 255.0f, 1);
-
-			menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 375, 125, render::fonts::menucontent, "", variables::colors::menu::floats::g, 0.0f, 255.0f, 2);
-
-			menu_framework::clr_slider(variables::menu::x + 515, variables::menu::y + 385, 125, render::fonts::menucontent, "", variables::colors::menu::floats::b, 0.0f, 255.0f, 3);
-				
+			break;
 		}
-		break;
-		}
-		}
+
+		menu_framework::menu_movement(variables::menu::x, variables::menu::y, variables::menu::w, 30);
 	}
-	menu_framework::menu_movement(variables::menu::x, variables::menu::y, variables::menu::w, 30);
 }
+
 
 void menu::toggle()
 {

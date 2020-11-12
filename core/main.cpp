@@ -14,14 +14,15 @@ unsigned long WINAPI initialize(void* instance) {
 		interfaces::initialize();
 		render::initialize();
 		hooks::initialize();
+		interfaces::console->get_convar("crosshair")->set_value(1);
 	}
-
+	
 	catch (const std::runtime_error & error) {
-		MessageBoxA(nullptr, error.what(), "csgo-cheat error!", MB_OK | MB_ICONERROR);
+		MessageBoxA(nullptr, error.what(), "Wiiner Crashed!", MB_OK | MB_ICONERROR);
 		FreeLibraryAndExitThread(static_cast<HMODULE>(instance), 0);
 	}
 
-	while (!GetAsyncKeyState(VK_DOWN))
+	while (!GetAsyncKeyState(VK_F7))
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	FreeLibraryAndExitThread(static_cast<HMODULE>(instance), 0);

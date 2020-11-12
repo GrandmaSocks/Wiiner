@@ -24,6 +24,16 @@
 #include "../../dependencies/utilities/renderer/renderer.hpp"
 #include "../../dependencies/utilities/console/console.hpp"
 #include "../utilities/csgo.hpp"
+#include <cstdint>
+#include <stack>
+#include <vector>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <windows.h>
+#include <algorithm>
+#include <iomanip>
+#include <sstream>
 
 //interfaces
 #define sig_client_state "A1 ? ? ? ? 8B 80 ? ? ? ? C3"
