@@ -50,7 +50,7 @@ void menu_framework::keybind(std::int32_t x, std::int32_t y, std::int32_t positi
 		{
 			if (GetAsyncKeyState(i))
 			{
-				if(menu_framework::keys_list[i] != "Error")
+				if (menu_framework::keys_list[i] != "Error")
 				{
 					value = i;
 					std::string key = std::to_string(GetAsyncKeyState(i));
@@ -63,7 +63,7 @@ void menu_framework::keybind(std::int32_t x, std::int32_t y, std::int32_t positi
 }
 
 /*
- 	else
+	else
 	{
 		render::draw_filled_rect(position, y, w, h, color(36, 36, 36, 255));
 		render::draw_rect(position - 1, y - 1, w + 1, h + 1, color(52, 134, 235, 255));
@@ -79,7 +79,7 @@ void menu::create(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h
 void menu::tab(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, unsigned long font, const std::string string, std::string icon, std::int32_t& tab, std::int32_t count, bool show_outline)
 {
 	GetCursorPos(&cursor);
-	
+
 	if ((cursor.x > x) && (cursor.x < x + w + 75) && (cursor.y > y) && (cursor.y < y + h) && (GetAsyncKeyState(VK_LBUTTON) & 1))
 	{
 		tab = count;
@@ -107,25 +107,25 @@ void menu::tab(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, u
 			render::text(x - render::get_text_size(font, string).x / 2 + 60, y + h / 2 - 8, font, string, false, color::white());;
 		}
 	}
-	
-	
+
+
 	if ((cursor.x > x) && (cursor.x < x + w + 130) && (cursor.y > y) && (cursor.y < y + h))
 	{
-		
+
 		if (count == 1)
 		{
 			render::draw_filled_rect(x - 10, y + 2, w + 130, h, color(52, 134, 235, 255));
 			render::text(x - render::get_text_size(font, string).x / 2 + 30, y + h / 2 - 8, render::fonts::tabicons, icon, false, color::white());
 			render::text(x - render::get_text_size(font, string).x / 2 + 60, y + h / 2 - 8, font, string, false, color::white());
 		}
-		
+
 		else
 		{
 			render::draw_filled_rect(x, y + 2, w + 130, h, color(52, 134, 235, 255));
 			render::text(x - render::get_text_size(font, string).x / 2 + 30, y + h / 2 - 8, render::fonts::tabicons, icon, false, color::white());
 			render::text(x - render::get_text_size(font, string).x / 2 + 60, y + h / 2 - 8, font, string, false, color::white());
 		}
-		
+
 		if (count == 2)
 		{
 			render::draw_filled_rect(x, y + 2, w + 130, h, color(52, 134, 235, 255));
@@ -157,7 +157,7 @@ void menu::tab(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, u
 			render::text(x - render::get_text_size(font, string).x / 2 + 30, y + h / 2 - 8, render::fonts::tabicons, icon, false, color::white());
 			render::text(x - render::get_text_size(font, string).x / 2 + 60, y + h / 2 - 8, font, string, false, color::white());
 		}
-		
+
 		else
 		{
 			render::draw_filled_rect(x, y + 2, w + 130, h, color(52, 134, 235, 255));
@@ -186,7 +186,7 @@ void menu::tab(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, u
 			render::text(x - render::get_text_size(font, string).x / 2 + 56, y + h / 2 - 8, font, string, false, color::white());
 		}
 	}
-	
+
 }
 
 void menu::group_box(std::int32_t x, std::int32_t y, std::int32_t w, std::int32_t h, unsigned long font, const std::string string, bool show_label, bool outline)
@@ -230,7 +230,7 @@ void menu::textbutton(std::int32_t x, std::int32_t y, std::int32_t w, std::int32
 	{
 		render::draw_filled_rect(x, y + 20, w, 5, color(52, 134, 235));
 	}
-	
+
 }
 
 void menu::check_box(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& value)
@@ -239,18 +239,25 @@ void menu::check_box(std::int32_t x, std::int32_t y, std::int32_t position, unsi
 
 	int w = 15, h = 15;
 
+	color checkbox_outline = color(25, 25, 25, 255);
+
+	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h))
+	{
+		checkbox_outline = color(52, 134, 235, 255);
+	}
+
 	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h) && GetAsyncKeyState(VK_LBUTTON) & 1)
 		value = !value;
 
 	if (value == false)
 	{
 		render::draw_filled_rect(position, y, w, h, color(36, 36, 36, 255));
-		render::draw_rect(position, y, w, h, color(125, 125, 125));
+		render::draw_rect(position, y, w, h, checkbox_outline);
 	}
 	else
 	{
 		render::draw_filled_rect(position, y, w, h, color(52, 134, 235));
-		render::draw_rect(position, y, w, h, color(125, 125, 125));
+		render::draw_rect(position, y, w, h, checkbox_outline);
 	}
 
 	//checkbox label
@@ -264,17 +271,20 @@ void menu::slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigne
 	int ix = x;
 	int yi = y + 9;
 
+	color outlinecolor = color(45, 45, 45);
+
 	if ((cursor.x > ix) && (cursor.x < ix + position) && (cursor.y > yi) && (cursor.y < yi + 6) && (GetAsyncKeyState(VK_LBUTTON)))
 		value = (cursor.x - ix) / (float(position) / float(max_value));
 
 	//slider background
 	render::draw_filled_rect(ix, yi, position, 12, color(36, 36, 36, 255));
 	render::draw_filled_rect(ix, yi, value * (float(position) / float(max_value)), 12, variables::colors::menu::c_menu);
+	render::draw_rect(ix, yi, value * (float(position) / float(max_value)), 12, outlinecolor);
 
-	render::text(x + 170, yi - 3, font, (std::stringstream{ } << std::setprecision(3) << value).str(), false, color::white());
+	render::text(x + 165, yi - 3, font, (std::stringstream{ } << std::setprecision(3) << value).str(), false, color::white());
 
 	render::draw_filled_rect(ix + value * (float(position) / float(max_value)), yi, 15, 12, color(255, 255, 255));
-	
+
 	//slider label
 	render::text(x - 1, y - 8, font, string, false, color::white());
 }
@@ -287,7 +297,7 @@ void menu::clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, uns
 
 	render::draw_filled_rect(x, y + 2, w, h, color(r, g, b));
 	render::draw_rect(x, y + 2, w, h, color(125, 125, 125));
-	
+
 	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h) && GetAsyncKeyState(VK_LBUTTON) & 1)
 		opened = !opened;
 
@@ -296,7 +306,7 @@ void menu::clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, uns
 		render::draw_filled_rect(x + 520, y, 400, 350, color(25, 25, 25, 255));
 		render::draw_rect(x + 520, y, 400, 350, color(125, 125, 125, 255));
 
-		render::draw_filled_rect(x +  640, y + 90, 150, 150, color(r, g, b, 255));
+		render::draw_filled_rect(x + 640, y + 90, 150, 150, color(r, g, b, 255));
 		render::draw_rect(x + 640, y + 90, 150, 150, color(r, g, b, 255));
 
 		menu::slider(x + 640, y + 240, 140, render::fonts::menucontent, "", r, 0, 255);
@@ -312,7 +322,139 @@ void menu::clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, uns
 
 	else
 	{
+
+	}
+
+}
+
+void menu::combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string label, bool& opened, std::vector<multi_select_item> items)
+{
+	GetCursorPos(&cursor);
+
+	int w = 175, h = 20;
+	int adaptive_height = 0;
+
+	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h + 20) && GetAsyncKeyState(VK_LBUTTON) & 1)
+		opened = !opened;
+
+	render::draw_text_string(x, y, font, label, false, color(255, 255, 255));
+	render::draw_filled_rect(x, y + 20, w, h, color(25, 25, 25));
+	render::draw_rect(x, y + 20, w, h, color(52, 134, 235));
+
+	if (opened)
+	{
+		render::draw_text_string(x + 165, y + 20, font, "-", true, color(255, 255, 255));
+
+		auto postion = 0;
+		for (auto item : items)
+		{
+			int textheight = y + 50;
+			render::draw_filled_rect(x, y + 50, w, h + height, color(25, 25, 25));
+			render::draw_rect(x, y + 50, w, h + height, color(52, 134, 235));
+			postion += 10;
+			textheight = textheight + postion;
+			render::draw_text_string(x + 2, textheight, font, item.name, false, color(255, 255, 255));
+		}
+	}
+	else
+	{
+		render::draw_text_string(x + 165, y + 20, font, "+", true, color(255, 255, 255));
+	}
+
+}
+
+void menu::keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, int& var, bool& opened, bool& otheropened)
+{
+	GetCursorPos(&cursor);
+	
+	int w = 120, h = 20;
+
+	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h + 20) && GetAsyncKeyState(VK_LBUTTON) & 1)
+	{
+		opened = !opened;
+	}
+	else
+	{
+		opened = false;
+	}
+
+	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h + 20) && GetAsyncKeyState(VK_RBUTTON) & 1)
+	{
+		otheropened = !otheropened;
+	}
+
+	if (opened)
+	{
+		for (int i = 0; i < 256; i++)
+		{
+			if (GetAsyncKeyState(i))
+			{
+				if (menu_framework::keys_list[i] != "Error")
+				{
+					var = i;
+				}
+			}
+		}
+		if (GetAsyncKeyState(VK_ESCAPE) || GetAsyncKeyState(VK_BACK))
+		{
+			var = 256;		
+		}
+	}
+
+	if (otheropened)
+	{
+		render::draw_filled_rect(x + 100, y, 150, 150, color(40, 40, 40));
+		render::draw_rect(x + 100, y, 150, 150, color(52, 134, 235));	
+	}
+
+	std::string key;
+	
+	if (var == 256)
+	{
+		key = "None";
+	}
+	else
+	{
+		key = menu_framework::keys_list[var].data();
+	}
+	
+	render::draw_text_string(x - 37, y - 2, font, "{ ", true, color(52, 134, 235));
+	render::draw_text_string(x, y - 2, font, key, true, color(255, 255, 255));
+	render::draw_text_string(x + 37, y - 2, font, " }", true, color(52, 134, 235));
+
+}
+
+void menu::quotes(std::int32_t x, std::int32_t y, unsigned long font)
+{
+	/*
+	 std::vector<std::string> quotes =
+	{
+		"Welcome to Wiiner",
+		"Have a nice day (:",
+		"Please visit our website for support",
+		"Brought to you by GrandmaSocks",
+		"Version: 0.5",
+		"Updated regularly",
+		"Ragebot in the works",
+		"Menu has been remodeled",
+		"Have fun"
+	};
+
+	bool should = (int)std::floor((interfaces::globals->cur_time * 0.0001) / interfaces::globals->interval_per_tick) % 150;
+
+	srand(time(NULL));
+
+	if (should) 
+	{
+	
+		render::draw_text_string(x, y + 3, font, quotes[rand() % quotes.size()], false, color(255, 255, 255));
 		
 	}
+	 */
+
+	/*  Above is a dynamic version of our info footer, I like static more but might as well save this to look back at
+	 */
+
+	render::draw_text_string(x, y + 3, font, "Welcome to Wiiner | Version: 0.5 | Ragebot in the Works | Menu has been remodeled", false, color(255, 255, 255));
 	
 }

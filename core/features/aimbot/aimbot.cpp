@@ -1,13 +1,5 @@
 #include "../features.hpp"
 
-// int aim_bone[] = { 8, 7 , 6 }; /* Useless */
-
-#define HITBOX_HEAD 8 /* I think I wanna do this for bone selection now */
-#define HITBOX_NECK 7
-#define HITBOX_CHEST 6
-#define HITBOX_PELVIS 5
-#define HITBOX_FOOT 4
-
 void smooth(vec3_t& ViewAngle, vec3_t& Angle, float SmoothValue) /* Useless? */
 {
 	// Angle = (ViewAngle + Angle - ViewAngle.clamp() / SmoothValue).clamp();
@@ -40,7 +32,7 @@ player_t* closest_to_crosshair(c_usercmd* user_cmd) /* Target closest to crossha
 			continue;
 
 		delta = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_eye_pos(), view_angles).length();
-		if (delta < best_delta && delta < 6)
+		if (delta < best_delta && delta < variables::aimbots::legit::legit_fov)
 		{
 			best_entity = entity;
 			best_delta = delta;
@@ -77,7 +69,7 @@ player_t* closest_distance(c_usercmd* user_cmd) /* Target closest to localplayer
 
 		auto delta = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_eye_pos(), view_angles).length();
 		distance = entity->abs_origin().distance_to(csgo::local_player->abs_origin());
-		if (distance < best_distance && delta < 4)
+		if (distance < best_distance && delta < variables::aimbots::legit::legit_fov)
 		{
 			best_entity = entity;
 		}
@@ -113,7 +105,7 @@ player_t* lowest_health(c_usercmd* user_cmd) /* Target with lowest health */
 
 		auto delta = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_eye_pos(), view_angles).length();
 		health = entity->health();
-		if (health < best_health && delta < 6)
+		if (health < best_health && delta < variables::aimbots::legit::legit_fov)
 		{
 			best_entity = entity;
 			best_health = health;
@@ -132,137 +124,156 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 
 	if (weapon_type == NULL)
 		return;
-	
+
 	if (weapon_type == WEAPONTYPE_PISTOL)
 	{
-		if (variables::aimbots::legit::pistols::aimbotToggle == true)
+
+		bool can_run = false;
+
+		if (variables::aimbots::legit::pistols::keybindings::aimbotbind != 256 && GetAsyncKeyState(variables::aimbots::legit::pistols::keybindings::aimbotbind))
 		{
-			if (variables::aimbots::legit::pistols::randombones == true)
+			can_run = true;
+		}
+
+		if (variables::aimbots::legit::pistols::keybindings::aimbotbind == 256)
+		{
+			can_run = true;
+		}
+
+		if (can_run)
+		{
+			if (variables::aimbots::legit::pistols::aimbotToggle == true)
 			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
-
-				srand(time(0)); /* psudeo random number generator */
-				int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
-
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (random == 1)
+				if (variables::aimbots::legit::pistols::randombones == true)
 				{
-					bone = 7;
-				}
-				if (random == 2 || random == 3) /* Bone selection */
-				{
-					bone = 8;
-				}
-				if (random == 4 || random == 5)
-				{
-					bone = 6;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					srand(time(0)); /* psudeo random number generator */
+					int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
 
-				angle.clamp();
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				angle /= (variables::aimbots::legit::pistols::smoothing * 4);
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
 
-				angle = math::normalize(angle);
+					if (!entity)
+						return;
 
-				user_cmd->viewangles += angle;
+					if (random == 1)
+					{
+						bone = 7;
+					}
+					if (random == 2 || random == 3) /* Bone selection */
+					{
+						bone = 8;
+					}
+					if (random == 4 || random == 5)
+					{
+						bone = 6;
+					}
 
-				if (variables::aimbots::legit::pistols::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
-				}
-			}
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
 
-			if (variables::aimbots::legit::pistols::randombones == false)
-			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
+					angle.clamp();
 
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
+					angle /= (variables::aimbots::legit::pistols::smoothing * 4);
 
-				ray_t ray;
-				trace_filter filter;
-				trace_t trace;
-				vec3_t start, end, forward;
+					angle = math::normalize(angle);
 
-				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+					user_cmd->viewangles += angle;
 
-				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-				start = csgo::local_player->get_eye_pos();
-				end = start + forward;
-				filter.skip = csgo::local_player;
-				ray.initialize(start, end);
-
-				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-				auto player = trace.entity;
-				if (!player)
-					return;
-
-				if (player->client_class()->class_id != ccsplayer)
-					return;
-
-				if (trace.entity->team() == csgo::local_player->team())
-					return;
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (variables::aimbots::legit::pistols::headprioirtybone)
-					bone = 8;
-
-				if (variables::aimbots::legit::pistols::bodyprioritybone)
-					bone = 6;
-				
-				if (variables::aimbots::legit::pistols::ahead && trace.hitGroup == hitgroup_head)
-				{
-					bone = 8;
+					if (variables::aimbots::legit::pistols::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 
-				if (variables::aimbots::legit::pistols::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::pistols::ahead && trace.hitGroup == 7)
+				if (variables::aimbots::legit::pistols::randombones == false)
 				{
-					bone = 8;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				if (variables::aimbots::legit::pistols::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::pistols::ahead && trace.hitGroup == 5)
-				{
-					bone = 6;
-				}
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				if (variables::aimbots::legit::pistols::astomach && trace.hitGroup == hitgroup_stomach)
-				{
-					bone = 4;
-				}
+					ray_t ray;
+					trace_filter filter;
+					trace_t trace;
+					vec3_t start, end, forward;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-				angle.clamp();
+					forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+					start = csgo::local_player->get_eye_pos();
+					end = start + forward;
+					filter.skip = csgo::local_player;
+					ray.initialize(start, end);
 
-				angle /= (variables::aimbots::legit::pistols::smoothing * 4);
+					interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
 
-				angle = math::normalize(angle);
+					auto player = trace.entity;
+					if (!player)
+						return;
 
-				user_cmd->viewangles += angle;
+					if (player->client_class()->class_id != ccsplayer)
+						return;
 
-				if (variables::aimbots::legit::pistols::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
+					if (trace.entity->team() == csgo::local_player->team())
+						return;
+
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
+
+					if (!entity)
+						return;
+
+					if (variables::aimbots::legit::pistols::headprioirtybone)
+						bone = 8;
+
+					if (variables::aimbots::legit::pistols::bodyprioritybone)
+						bone = 6;
+
+					if (variables::aimbots::legit::pistols::stomachprioritybone)
+						bone = 4;
+
+					if (variables::aimbots::legit::pistols::ahead && trace.hitGroup == hitgroup_head)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::pistols::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::pistols::ahead && trace.hitGroup == 7)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::pistols::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::pistols::ahead && trace.hitGroup == 5)
+					{
+						bone = 6;
+					}
+
+					if (variables::aimbots::legit::pistols::astomach && trace.hitGroup == hitgroup_stomach)
+					{
+						bone = 4;
+					}
+
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+					angle.clamp();
+
+					angle /= (variables::aimbots::legit::pistols::smoothing * 4);
+
+					angle = math::normalize(angle);
+
+					user_cmd->viewangles += angle;
+
+					if (variables::aimbots::legit::pistols::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 			}
 		}
@@ -273,134 +284,152 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 
 	if (weapon_type == WEAPONTYPE_SUBMACHINEGUN)
 	{
-		if (variables::aimbots::legit::smgs::aimbotToggle == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::smgs::keybindings::aimbotbind != 256 && GetAsyncKeyState(variables::aimbots::legit::smgs::keybindings::aimbotbind))
 		{
-			if (variables::aimbots::legit::smgs::randombones == true)
+			can_run = true;
+		}
+
+		if (variables::aimbots::legit::smgs::keybindings::aimbotbind == 256)
+		{
+			can_run = true;
+		}
+
+		if (can_run)
+		{
+			if (variables::aimbots::legit::smgs::aimbotToggle == true)
 			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
-
-				srand(time(0)); /* psudeo random number generator */
-				int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
-
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-				
-				if (random == 1)
+				if (variables::aimbots::legit::smgs::randombones == true)
 				{
-					bone = 7;
-				}
-				if (random == 2 || random == 3) /* Bone selection */
-				{
-					bone = 8;
-				}
-				if (random == 4 || random == 5)
-				{
-					bone = 6;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					srand(time(0)); /* psudeo random number generator */
+					int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
 
-				angle.clamp();
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				angle /= (variables::aimbots::legit::smgs::smoothing * 4);
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
 
-				angle = math::normalize(angle);
+					if (!entity)
+						return;
 
-				user_cmd->viewangles += angle;
+					if (random == 1)
+					{
+						bone = 7;
+					}
+					if (random == 2 || random == 3) /* Bone selection */
+					{
+						bone = 8;
+					}
+					if (random == 4 || random == 5)
+					{
+						bone = 6;
+					}
 
-				if (variables::aimbots::legit::smgs::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
-				}
-			}
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
 
-			if (variables::aimbots::legit::smgs::randombones == false)
-			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
+					angle.clamp();
 
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
+					angle /= (variables::aimbots::legit::smgs::smoothing * 4);
 
-				ray_t ray;
-				trace_filter filter;
-				trace_t trace;
-				vec3_t start, end, forward;
+					angle = math::normalize(angle);
 
-				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
-				
-				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-				start = csgo::local_player->get_eye_pos();
-				end = start + forward;
-				filter.skip = csgo::local_player;
-				ray.initialize(start, end);
+					user_cmd->viewangles += angle;
 
-				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-				auto player = trace.entity;
-				if (!player)
-					return;
-
-				if (player->client_class()->class_id != ccsplayer)
-					return;
-
-				if (trace.entity->team() == csgo::local_player->team())
-					return;
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (variables::aimbots::legit::smgs::headprioirtybone)
-					bone = 8;
-
-				if (variables::aimbots::legit::smgs::bodyprioritybone)
-					bone = 6;
-				
-				if (variables::aimbots::legit::smgs::ahead && trace.hitGroup == hitgroup_head)
-				{
-					bone = 8;
+					if (variables::aimbots::legit::smgs::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 
-				if (variables::aimbots::legit::smgs::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::smgs::ahead && trace.hitGroup == 7)
+				if (variables::aimbots::legit::smgs::randombones == false)
 				{
-					bone = 8;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				if (variables::aimbots::legit::smgs::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::smgs::ahead && trace.hitGroup == 5)
-				{
-					bone = 6;
-				}
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				if (variables::aimbots::legit::smgs::astomach && trace.hitGroup == hitgroup_stomach)
-				{
-					bone = 4;
-				}
+					ray_t ray;
+					trace_filter filter;
+					trace_t trace;
+					vec3_t start, end, forward;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-				angle.clamp();
+					forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+					start = csgo::local_player->get_eye_pos();
+					end = start + forward;
+					filter.skip = csgo::local_player;
+					ray.initialize(start, end);
 
-				angle /= (variables::aimbots::legit::smgs::smoothing * 4);
+					interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
 
-				angle = math::normalize(angle);
+					auto player = trace.entity;
+					if (!player)
+						return;
 
-				user_cmd->viewangles += angle;
+					if (player->client_class()->class_id != ccsplayer)
+						return;
 
-				if (variables::aimbots::legit::smgs::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
+					if (trace.entity->team() == csgo::local_player->team())
+						return;
+
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
+
+					if (!entity)
+						return;
+
+					if (variables::aimbots::legit::smgs::headprioirtybone)
+						bone = 8;
+
+					if (variables::aimbots::legit::smgs::bodyprioritybone)
+						bone = 6;
+
+					if (variables::aimbots::legit::smgs::stomachprioritybone)
+						bone = 4;
+
+					if (variables::aimbots::legit::smgs::ahead && trace.hitGroup == hitgroup_head)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::smgs::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::smgs::ahead && trace.hitGroup == 7)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::smgs::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::smgs::ahead && trace.hitGroup == 5)
+					{
+						bone = 6;
+					}
+
+					if (variables::aimbots::legit::smgs::astomach && trace.hitGroup == hitgroup_stomach)
+					{
+						bone = 4;
+					}
+
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+					angle.clamp();
+
+					angle /= (variables::aimbots::legit::smgs::smoothing * 4);
+
+					angle = math::normalize(angle);
+
+					user_cmd->viewangles += angle;
+
+					if (variables::aimbots::legit::smgs::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 			}
 		}
@@ -408,135 +437,153 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 
 	if (weapon_type == WEAPONTYPE_RIFLE)
 	{
-		if (variables::aimbots::legit::rifles::aimbotToggle == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::rifles::keybindings::aimbotbind != 256 && GetAsyncKeyState(variables::aimbots::legit::rifles::keybindings::aimbotbind))
 		{
+			can_run = true;
+		}
 
-			if (variables::aimbots::legit::rifles::randombones == true)
+		if (variables::aimbots::legit::rifles::keybindings::aimbotbind == 256)
+		{
+			can_run = true;
+		}
+
+		if (can_run)
+		{
+			if (variables::aimbots::legit::rifles::aimbotToggle == true)
 			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
 
-				srand(time(0)); /* psudeo random number generator */
-				int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
-
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (random == 1)
+				if (variables::aimbots::legit::rifles::randombones == true)
 				{
-					bone = 7;
-				}
-				if (random == 2 || random == 3) /* Bone selection */
-				{
-					bone = 8;
-				}
-				if (random == 4 || random == 5)
-				{
-					bone = 6;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					srand(time(0)); /* psudeo random number generator */
+					int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
 
-				angle.clamp();
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				angle /= (variables::aimbots::legit::rifles::smoothing * 4);
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
 
-				angle = math::normalize(angle);
+					if (!entity)
+						return;
 
-				user_cmd->viewangles += angle;
+					if (random == 1)
+					{
+						bone = 7;
+					}
+					if (random == 2 || random == 3) /* Bone selection */
+					{
+						bone = 8;
+					}
+					if (random == 4 || random == 5)
+					{
+						bone = 6;
+					}
 
-				if (variables::aimbots::legit::rifles::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
-				}
-			}
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
 
-			if (variables::aimbots::legit::rifles::randombones == false)
-			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
+					angle.clamp();
 
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
+					angle /= (variables::aimbots::legit::rifles::smoothing * 4);
 
-				ray_t ray;
-				trace_filter filter;
-				trace_t trace;
-				vec3_t start, end, forward;
+					angle = math::normalize(angle);
 
-				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+					user_cmd->viewangles += angle;
 
-				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-				start = csgo::local_player->get_eye_pos();
-				end = start + forward;
-				filter.skip = csgo::local_player;
-				ray.initialize(start, end);
-
-				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-				auto player = trace.entity;
-				if (!player)
-					return;
-
-				if (player->client_class()->class_id != ccsplayer)
-					return;
-
-				if (trace.entity->team() == csgo::local_player->team())
-					return;
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (variables::aimbots::legit::rifles::headprioirtybone)
-					bone = 8;
-
-				if (variables::aimbots::legit::rifles::bodyprioritybone)
-					bone = 6;
-				
-				if (variables::aimbots::legit::rifles::ahead && trace.hitGroup == hitgroup_head)
-				{
-					bone = 8;
+					if (variables::aimbots::legit::rifles::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 
-				if (variables::aimbots::legit::rifles::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::rifles::ahead && trace.hitGroup == 7)
+				if (variables::aimbots::legit::rifles::randombones == false)
 				{
-					bone = 8;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				if (variables::aimbots::legit::rifles::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::rifles::ahead && trace.hitGroup == 5)
-				{
-					bone = 6;
-				}
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				if (variables::aimbots::legit::rifles::astomach && trace.hitGroup == hitgroup_stomach)
-				{
-					bone = 4;
-				}
+					ray_t ray;
+					trace_filter filter;
+					trace_t trace;
+					vec3_t start, end, forward;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-				angle.clamp();
+					forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+					start = csgo::local_player->get_eye_pos();
+					end = start + forward;
+					filter.skip = csgo::local_player;
+					ray.initialize(start, end);
 
-				angle /= (variables::aimbots::legit::rifles::smoothing * 4);
+					interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
 
-				angle = math::normalize(angle);
+					auto player = trace.entity;
+					if (!player)
+						return;
 
-				user_cmd->viewangles += angle;
+					if (player->client_class()->class_id != ccsplayer)
+						return;
 
-				if (variables::aimbots::legit::rifles::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
+					if (trace.entity->team() == csgo::local_player->team())
+						return;
+
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
+
+					if (!entity)
+						return;
+
+					if (variables::aimbots::legit::rifles::headprioirtybone)
+						bone = 8;
+
+					if (variables::aimbots::legit::rifles::bodyprioritybone)
+						bone = 6;
+
+					if (variables::aimbots::legit::rifles::stomachprioritybone)
+						bone = 4;
+
+					if (variables::aimbots::legit::rifles::ahead && trace.hitGroup == hitgroup_head)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::rifles::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::rifles::ahead && trace.hitGroup == 7)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::rifles::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::rifles::ahead && trace.hitGroup == 5)
+					{
+						bone = 6;
+					}
+
+					if (variables::aimbots::legit::rifles::astomach && trace.hitGroup == hitgroup_stomach)
+					{
+						bone = 4;
+					}
+
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+					angle.clamp();
+
+					angle /= (variables::aimbots::legit::rifles::smoothing * 4);
+
+					angle = math::normalize(angle);
+
+					user_cmd->viewangles += angle;
+
+					if (variables::aimbots::legit::rifles::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 			}
 		}
@@ -544,142 +591,160 @@ void aimbot(c_usercmd* user_cmd) /* Where legit aimbot runs */
 
 	if (weapon_type == WEAPONTYPE_SNIPER_RIFLE)
 	{
-		if (variables::aimbots::legit::snipers::aimbotToggle == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::snipers::keybindings::aimbotbind != 256 && GetAsyncKeyState(variables::aimbots::legit::snipers::keybindings::aimbotbind))
 		{
+			can_run = true;
+		}
 
-			if (variables::aimbots::legit::snipers::randombones == true)
+		if (variables::aimbots::legit::snipers::keybindings::aimbotbind == 256)
+		{
+			can_run = true;
+		}
+
+		if (can_run)
+		{
+			if (variables::aimbots::legit::snipers::aimbotToggle == true)
 			{
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
 
-				if (variables::aimbots::legit::snipers::aimcheck == true && csgo::local_player->is_scoped() == false)
-					return;			
-				
-				srand(time(0)); /* psudeo random number generator */
-				int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
-
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (random == 1)
+				if (variables::aimbots::legit::snipers::randombones == true)
 				{
-					bone = 7;
-				}
-				if (random == 2 || random == 3) /* Bone selection */
-				{
-					bone = 8;
-				}
-				if (random == 4 || random == 5)
-				{
-					bone = 6;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					if (variables::aimbots::legit::snipers::aimcheck == true && csgo::local_player->is_scoped() == false)
+						return;
 
-				angle.clamp();
+					srand(time(0)); /* psudeo random number generator */
+					int random = rand() % 5 + 1;  /* Only randomize from 1-5 */
 
-				angle /= (variables::aimbots::legit::snipers::smoothing * 4);
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				angle = math::normalize(angle);
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
 
-				user_cmd->viewangles += angle;
+					if (!entity)
+						return;
 
-				if (variables::aimbots::legit::snipers::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
-				}
-			}
+					if (random == 1)
+					{
+						bone = 7;
+					}
+					if (random == 2 || random == 3) /* Bone selection */
+					{
+						bone = 8;
+					}
+					if (random == 4 || random == 5)
+					{
+						bone = 6;
+					}
 
-			if (variables::aimbots::legit::snipers::randombones == false)
-			{
-				
-				if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
-					return;
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
 
-				if (variables::aimbots::legit::snipers::aimcheck == true && csgo::local_player->is_scoped() == false)
-					return;
-				
-				if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
-					return; /* Don't aimbot with grenade, c4, or knife */
+					angle.clamp();
 
-				ray_t ray;
-				trace_filter filter;
-				trace_t trace;
-				vec3_t start, end, forward;
+					angle /= (variables::aimbots::legit::snipers::smoothing * 4);
 
-				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+					angle = math::normalize(angle);
 
-				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-				start = csgo::local_player->get_eye_pos();
-				end = start + forward;
-				filter.skip = csgo::local_player;
-				ray.initialize(start, end);
+					user_cmd->viewangles += angle;
 
-				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-				auto player = trace.entity;
-				if (!player)
-					return;
-
-				if (player->client_class()->class_id != ccsplayer)
-					return;
-
-				if (trace.entity->team() == csgo::local_player->team())
-					return;
-
-				player_t* entity = nullptr;
-				int bone = 0;
-				entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
-
-				if (!entity)
-					return;
-
-				if (variables::aimbots::legit::snipers::headprioirtybone)
-					bone = 8;
-
-				if (variables::aimbots::legit::snipers::bodyprioritybone)
-					bone = 6;
-				
-				if (variables::aimbots::legit::snipers::ahead && trace.hitGroup == hitgroup_head)
-				{
-					bone = 8;
+					if (variables::aimbots::legit::snipers::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 
-				if (variables::aimbots::legit::snipers::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::snipers::ahead && trace.hitGroup == 7)
+				if (variables::aimbots::legit::snipers::randombones == false)
 				{
-					bone = 8;
-				}
 
-				if (variables::aimbots::legit::snipers::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::snipers::ahead && trace.hitGroup == 5)
-				{
-					bone = 6;
-				}
+					if (!csgo::local_player->is_alive()) /* No reason to run aimbot if you are dead */
+						return;
 
-				if (variables::aimbots::legit::snipers::astomach && trace.hitGroup == hitgroup_stomach)
-				{
-					bone = 4;
-				}
+					if (variables::aimbots::legit::snipers::aimcheck == true && csgo::local_player->is_scoped() == false)
+						return;
 
-				auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+					if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_C4 || weapon_type == WEAPONTYPE_KNIFE)
+						return; /* Don't aimbot with grenade, c4, or knife */
 
-				angle.clamp();
+					ray_t ray;
+					trace_filter filter;
+					trace_t trace;
+					vec3_t start, end, forward;
 
-				angle /= (variables::aimbots::legit::snipers::smoothing * 4);
+					math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-				angle = math::normalize(angle);
+					forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+					start = csgo::local_player->get_eye_pos();
+					end = start + forward;
+					filter.skip = csgo::local_player;
+					ray.initialize(start, end);
 
-				user_cmd->viewangles += angle;
+					interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
 
-				if (variables::aimbots::legit::snipers::silentaim == false) /* If silent aim isn't enabled set viewangles */
-				{
-					interfaces::engine->set_view_angles(user_cmd->viewangles);
+					auto player = trace.entity;
+					if (!player)
+						return;
+
+					if (player->client_class()->class_id != ccsplayer)
+						return;
+
+					if (trace.entity->team() == csgo::local_player->team())
+						return;
+
+					player_t* entity = nullptr;
+					int bone = 0;
+					entity = closest_to_crosshair(user_cmd); /* I should make it so you can pick diffrent modes  */
+
+					if (!entity)
+						return;
+
+					if (variables::aimbots::legit::snipers::headprioirtybone)
+						bone = 8;
+
+					if (variables::aimbots::legit::snipers::bodyprioritybone)
+						bone = 6;
+
+					if (variables::aimbots::legit::snipers::stomachprioritybone)
+						bone = 4;
+
+					if (variables::aimbots::legit::snipers::ahead && trace.hitGroup == hitgroup_head)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::snipers::ahead && trace.hitGroup == hitgroup_generic || variables::aimbots::legit::snipers::ahead && trace.hitGroup == 7)
+					{
+						bone = 8;
+					}
+
+					if (variables::aimbots::legit::snipers::achest && trace.hitGroup == hitgroup_chest || variables::aimbots::legit::snipers::ahead && trace.hitGroup == 5)
+					{
+						bone = 6;
+					}
+
+					if (variables::aimbots::legit::snipers::astomach && trace.hitGroup == hitgroup_stomach)
+					{
+						bone = 4;
+					}
+
+					auto angle = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_bone_position(bone), user_cmd->viewangles);
+
+					angle.clamp();
+
+					angle /= (variables::aimbots::legit::snipers::smoothing * 4);
+
+					angle = math::normalize(angle);
+
+					user_cmd->viewangles += angle;
+
+					if (variables::aimbots::legit::snipers::silentaim == false) /* If silent aim isn't enabled set viewangles */
+					{
+						interfaces::engine->set_view_angles(user_cmd->viewangles);
+					}
 				}
 			}
 		}
@@ -690,7 +755,7 @@ void triggerbot(c_usercmd* user_cmd)
 {
 	if (!csgo::local_player->is_alive()) /* No reason to run triggerbot if you are dead */
 		return;
-	
+
 	const auto weapon_type = csgo::local_player->active_weapon()->get_weapon_data()->weapon_type;
 
 	if (weapon_type == WEAPONTYPE_GRENADE || weapon_type == WEAPONTYPE_KNIFE)
@@ -701,194 +766,253 @@ void triggerbot(c_usercmd* user_cmd)
 
 	if (weapon_type == WEAPONTYPE_PISTOL)
 	{
-		if (variables::aimbots::trigger::pistols::enabled == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::pistols::keybindings::triggerbind != 256 && GetAsyncKeyState(variables::aimbots::legit::pistols::keybindings::triggerbind))
 		{
-			ray_t ray;
-			trace_filter filter;
-			trace_t trace;
-			vec3_t start, end, forward;
+			can_run = true;
+		}
 
-			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+		if (variables::aimbots::legit::pistols::keybindings::triggerbind == 256)
+		{
+			can_run = true;
+		}
 
-			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-			start = csgo::local_player->get_eye_pos();
-			end = start + forward;
-			filter.skip = csgo::local_player;
-			ray.initialize(start, end);
-
-			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-			auto player = trace.entity;
-			if (!player)
-				return;
-
-			if (player->client_class()->class_id != ccsplayer)
-				return;
-
-			if (trace.entity->team() == csgo::local_player->team())
-				return;
-
-			if (variables::aimbots::trigger::pistols::head && trace.hitGroup == hitgroup_head)
+		if (can_run)
+		{
+			if (variables::aimbots::trigger::pistols::enabled == true)
 			{
-				user_cmd->buttons |= in_attack;
-			}
+				ray_t ray;
+				trace_filter filter;
+				trace_t trace;
+				vec3_t start, end, forward;
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
-			}
+				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-			if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
-			}
+				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+				start = csgo::local_player->get_eye_pos();
+				end = start + forward;
+				filter.skip = csgo::local_player;
+				ray.initialize(start, end);
 
+				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+				auto player = trace.entity;
+				if (!player)
+					return;
+
+				if (player->client_class()->class_id != ccsplayer)
+					return;
+
+				if (trace.entity->team() == csgo::local_player->team())
+					return;
+
+				if (variables::aimbots::trigger::pistols::head && trace.hitGroup == hitgroup_head)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::pistols::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+			}
 		}
 	}
 
 	if (weapon_type == WEAPONTYPE_SUBMACHINEGUN)
 	{
-		if (variables::aimbots::trigger::smgs::enabled == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::smgs::keybindings::triggerbind != 256 && GetAsyncKeyState(variables::aimbots::legit::smgs::keybindings::triggerbind))
 		{
-			ray_t ray;
-			trace_filter filter;
-			trace_t trace;
-			vec3_t start, end, forward;
+			can_run = true;
+		}
 
-			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+		if (variables::aimbots::legit::smgs::keybindings::triggerbind == 256)
+		{
+			can_run = true;
+		}
 
-			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-			start = csgo::local_player->get_eye_pos();
-			end = start + forward;
-			filter.skip = csgo::local_player;
-			ray.initialize(start, end);
-
-			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-			auto player = trace.entity;
-			if (!player)
-				return;
-
-			if (player->client_class()->class_id != ccsplayer)
-				return;
-
-			if (trace.entity->team() == csgo::local_player->team())
-				return;
-
-			if (variables::aimbots::trigger::smgs::head && trace.hitGroup == hitgroup_head)
+		if (can_run)
+		{
+			if (variables::aimbots::trigger::smgs::enabled == true)
 			{
-				user_cmd->buttons |= in_attack;
-			}
+				ray_t ray;
+				trace_filter filter;
+				trace_t trace;
+				vec3_t start, end, forward;
 
-			if (variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
-			}
+				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-			if (variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
+				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+				start = csgo::local_player->get_eye_pos();
+				end = start + forward;
+				filter.skip = csgo::local_player;
+				ray.initialize(start, end);
+
+				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+				auto player = trace.entity;
+				if (!player)
+					return;
+
+				if (player->client_class()->class_id != ccsplayer)
+					return;
+
+				if (trace.entity->team() == csgo::local_player->team())
+					return;
+
+				if (variables::aimbots::trigger::smgs::head && trace.hitGroup == hitgroup_head)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::smgs::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
 			}
 		}
 	}
 
 	if (weapon_type == WEAPONTYPE_RIFLE)
 	{
-		if (variables::aimbots::trigger::rifles::enabled == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::rifles::keybindings::triggerbind != 256 && GetAsyncKeyState(variables::aimbots::legit::rifles::keybindings::triggerbind))
 		{
-			ray_t ray;
-			trace_filter filter;
-			trace_t trace;
-			vec3_t start, end, forward;
+			can_run = true;
+		}
 
-			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+		if (variables::aimbots::legit::rifles::keybindings::triggerbind == 256)
+		{
+			can_run = true;
+		}
 
-			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-			start = csgo::local_player->get_eye_pos();
-			end = start + forward;
-			filter.skip = csgo::local_player;
-			ray.initialize(start, end);
-
-			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-			auto player = trace.entity;
-			if (!player)
-				return;
-
-			if (player->client_class()->class_id != ccsplayer)
-				return;
-
-			if (trace.entity->team() == csgo::local_player->team())
-				return;
-
-			if (variables::aimbots::trigger::rifles::head && trace.hitGroup == hitgroup_head)
+		if (can_run)
+		{
+			if (variables::aimbots::trigger::rifles::enabled == true)
 			{
-				user_cmd->buttons |= in_attack;
-			}
+				ray_t ray;
+				trace_filter filter;
+				trace_t trace;
+				vec3_t start, end, forward;
 
-			if (variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
-			}
+				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
 
-			if (variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
+				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+				start = csgo::local_player->get_eye_pos();
+				end = start + forward;
+				filter.skip = csgo::local_player;
+				ray.initialize(start, end);
+
+				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+				auto player = trace.entity;
+				if (!player)
+					return;
+
+				if (player->client_class()->class_id != ccsplayer)
+					return;
+
+				if (trace.entity->team() == csgo::local_player->team())
+					return;
+
+				if (variables::aimbots::trigger::rifles::head && trace.hitGroup == hitgroup_head)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::rifles::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
 			}
 		}
 	}
 
 	if (weapon_type == WEAPONTYPE_SNIPER_RIFLE)
 	{
-		if (variables::aimbots::trigger::snipers::enabled == true)
+		bool can_run = false;
+
+		if (variables::aimbots::legit::snipers::keybindings::triggerbind != 256 && GetAsyncKeyState(variables::aimbots::legit::snipers::keybindings::triggerbind))
 		{
+			can_run = true;
+		}
 
-			if (variables::aimbots::trigger::snipers::scopeCheck == true && csgo::local_player->is_scoped() == false)
-				return;
+		if (variables::aimbots::legit::snipers::keybindings::triggerbind == 256)
+		{
+			can_run = true;
+		}
 
-			int trigger_bone[] = { 0, hitgroup_head, hitgroup_chest, hitgroup_stomach };
-
-			ray_t ray;
-			trace_filter filter;
-			trace_t trace;
-			vec3_t start, end, forward;
-
-			math::angle_vectors_alternative(user_cmd->viewangles, &forward);
-
-			forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
-			start = csgo::local_player->get_eye_pos();
-			end = start + forward;
-			filter.skip = csgo::local_player;
-			ray.initialize(start, end);
-
-			interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
-
-			auto player = trace.entity;
-			
-			if (!player)
-				return;
-
-			if (player->client_class()->class_id != ccsplayer)
-				return;
-
-			if (trace.entity->team() == csgo::local_player->team())
-				return;
-
-			if (variables::aimbots::trigger::snipers::head && trace.hitGroup == hitgroup_head)
+		if (can_run)
+		{
+			if (variables::aimbots::trigger::snipers::enabled == true)
 			{
-				user_cmd->buttons |= in_attack;
-			}
 
-			if (variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
-			}
+				if (variables::aimbots::trigger::snipers::scopeCheck == true && csgo::local_player->is_scoped() == false)
+					return;
 
-			if (variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_leftarm)
-			{
-				user_cmd->buttons |= in_attack;
-			}
+				int trigger_bone[] = { 0, hitgroup_head, hitgroup_chest, hitgroup_stomach };
 
+				ray_t ray;
+				trace_filter filter;
+				trace_t trace;
+				vec3_t start, end, forward;
+
+				math::angle_vectors_alternative(user_cmd->viewangles, &forward);
+
+				forward *= csgo::local_player->active_weapon()->get_weapon_data()->weapon_range;
+				start = csgo::local_player->get_eye_pos();
+				end = start + forward;
+				filter.skip = csgo::local_player;
+				ray.initialize(start, end);
+
+				interfaces::trace_ray->trace_ray(ray, 0x46004003, &filter, &trace);
+
+				auto player = trace.entity;
+
+				if (!player)
+					return;
+
+				if (player->client_class()->class_id != ccsplayer)
+					return;
+
+				if (trace.entity->team() == csgo::local_player->team())
+					return;
+
+				if (variables::aimbots::trigger::snipers::head && trace.hitGroup == hitgroup_head)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_chest || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+				if (variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_stomach || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_rightarm || variables::aimbots::trigger::snipers::chest && trace.hitGroup == hitgroup_leftarm)
+				{
+					user_cmd->buttons |= in_attack;
+				}
+
+			}
 		}
 	}
 }

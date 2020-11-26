@@ -2,23 +2,6 @@
 #include "../../dependencies/utilities/csgo.hpp"
 #include "../variables.hpp"
 
-char* HitgroupToName(int hitgroup)
-{
-	switch (hitgroup)
-	{
-	case hitgroup_head:
-		return "head";
-	case hitgroup_leftleg:
-		return "left leg";
-	case hitgroup_rightleg:
-		return "right leg";
-	case hitgroup_stomach:
-		return "stomach";
-	default:
-		return "body";
-	}
-}
-
 namespace misc {
 	namespace movement {
 		void bunny_hop(c_usercmd* cmd);
@@ -35,15 +18,16 @@ public:
 	static void hitchance(c_usercmd* cmd);
 	static void mindmg(c_usercmd* cmd);
 	static void fixpvs();
+	static void animfix();
 };
 
 void hitlogs(i_game_event* event);
 
 void antiflash();
 
-void rcs(c_usercmd* cmd);
+void rcs(c_usercmd* cmd, vec3_t& angles);
 
-void esp();
+void esp(i_game_event* event = nullptr) noexcept;
 
 void boneesp();
 
@@ -94,3 +78,7 @@ namespace cfg
 	void reset();
 	
 }
+
+void dropped_weapons();
+
+void dispatch_logs();

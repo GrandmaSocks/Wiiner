@@ -26,6 +26,9 @@ namespace variables {
 		inline bool knifehandflip = false;
 		inline bool spreadCircle = false;
 		inline bool classicmenu = true;
+
+		inline int thirdpersonbind = 256;
+		
 	}
 
 	///////////////////////////////////////////
@@ -41,9 +44,18 @@ namespace variables {
 			inline bool name = true;
 			inline bool bonevisible = false;
 			inline bool bonealways = false;
-			inline bool weaponesp = false;
+			inline bool weaponesp = true;
 			inline bool hpoverridecheck = true;
 			inline bool backtrackskeleton = false;
+			inline bool hitmarkers = false;
+			inline bool flag_flashed = true;
+			inline bool flag_money = true;
+			inline bool flag_armor = true;
+			inline bool flag_scoped = true;
+			inline bool flag_defusekit = true;
+			inline bool flag_defusing = true;
+			inline bool dropped_wep_names = true;
+			inline bool bomb_info = true;
 		}
 
 		namespace chams
@@ -123,8 +135,15 @@ namespace variables {
 
 		namespace legit
 		{
+			inline float legit_fov = 8.0f;
 			namespace pistols
 			{
+				namespace keybindings
+				{
+					inline int aimbotbind = 256;
+					inline int triggerbind = 256;
+				}
+				
 				inline bool aimbotToggle = true;
 				inline bool crosshair = true;
 				inline bool rcs = false;
@@ -139,10 +158,17 @@ namespace variables {
 				inline bool oof = false;
 				inline bool headprioirtybone = false;
 				inline bool bodyprioritybone = true;
+				inline bool stomachprioritybone = false;
 			}
 
 			namespace smgs
 			{
+				namespace keybindings
+				{
+					inline int aimbotbind = 256;
+					inline int triggerbind = 256;
+				}
+				
 				inline bool aimbotToggle = true;
 				inline bool crosshair = true;
 				inline bool rcs = false;
@@ -157,10 +183,17 @@ namespace variables {
 				inline bool oof = false;
 				inline bool headprioirtybone = false;
 				inline bool bodyprioritybone = true;
+				inline bool stomachprioritybone = false;
 			}
 
 			namespace rifles
 			{
+				namespace keybindings
+				{
+					inline int aimbotbind = 256;
+					inline int triggerbind = 256;
+				}
+				
 				inline bool aimbotToggle = true;
 				inline bool crosshair = true;
 				inline bool rcs = false;
@@ -175,10 +208,17 @@ namespace variables {
 				inline bool oof = false;
 				inline bool headprioirtybone = false;
 				inline bool bodyprioritybone = true;
+				inline bool stomachprioritybone = false;
 			}
 
 			namespace snipers
 			{
+				namespace keybindings
+				{
+					inline int aimbotbind = 256;
+					inline int triggerbind = 256;
+				}
+				
 				inline bool aimbotToggle = true;
 				inline bool crosshair = true;
 				inline bool rcs = false;
@@ -194,17 +234,15 @@ namespace variables {
 				inline bool oof = false;
 				inline bool headprioirtybone = false;
 				inline bool bodyprioritybone = true;
-				
-				namespace keybindings
-				{
-					inline int aimbotbind;
-				}
+				inline bool stomachprioritybone = false;
 				
 			}
 
 			inline bool aimbotToggle = true;
 			inline bool crosshair = true;
-			inline bool rcs = false;
+			inline bool rcs = true;
+			inline float rcs_x = 0.85f;
+			inline float rcs_y = 0.85f;
 			inline float smoothing = 2.0f;
 			inline bool silentaim = false;
 			
@@ -426,6 +464,29 @@ namespace variables {
 
 	namespace menu {
 
+		namespace binds
+		{
+			inline bool pistolbind = false;
+			inline bool otherpistolbind = false;
+			inline bool pistoltriggerbind = false;
+			inline bool othertriggerpistolbind = false;
+			inline bool smgbind = false;
+			inline bool othersmgbind = false;
+			inline bool smgtriggerbind = false;
+			inline bool othertriggersmgbind = false;
+			inline bool riflebind = false;
+			inline bool otherriflebind = false;
+			inline bool rifletriggerbind = false;
+			inline bool othertriggerriflebind = false;
+			inline bool sniperbind = false;
+			inline bool othersniperbind = false;
+			inline bool snipertriggerbind = false;
+			inline bool othertriggersniperbind = false;
+
+			inline bool thirdpersonbind = false;
+			inline bool otherthirdpersonbind = false;
+		}
+		
 		namespace tabs
 		{
 			inline bool legit_pistols = true;
@@ -436,22 +497,18 @@ namespace variables {
 		
 		namespace combos
 		{
-			inline bool wgIsOpened = false;
-			inline bool lbsIsOpened = false;
-			inline bool pisopened = false;
-			inline bool yisopened = false;
-			inline bool boneComboToggle = false;
-			inline bool tHOpened = false;
-			inline bool cCOpened = false;
-			inline bool c_mOpened = false;
-			inline bool a_Combo = false;
+			inline bool pistol_priority = false;
+			inline bool smg_priority = false;
+			inline bool rifle_priority = false;
+			inline bool sniper_priority = false;
+			inline bool pistol_trigger_slection = false;
+			inline bool smg_trigger_slection = false;
+			inline bool rifle_trigger_slection = false;
+			inline bool sniper_trigger_slection = false;
 		}
 
 		inline bool opened = true;
-		inline int x = 140, y = 140;
-		inline int w = 900, h = 700;
 
-		inline int cx = 100, cy = 20;
 	}
 
 	///////////////////////////////////////////

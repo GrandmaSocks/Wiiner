@@ -4,7 +4,10 @@ namespace hooks {
 	bool initialize();
 	void release();
 
-	inline unsigned int get_virtual(void* _class, unsigned int index) { return static_cast<unsigned int>((*static_cast<int**>(_class))[index]); }
+	inline unsigned int get_virtual(void* _class, unsigned int index)
+	{
+		return static_cast<unsigned int>((*static_cast<int**>(_class))[index]);
+	}
 
 	namespace create_move {
 		using fn = bool(__stdcall*)(float, c_usercmd*);
@@ -36,4 +39,34 @@ namespace hooks {
 		float __fastcall hook(PVOID convar);
 	}
 
+	namespace skipanimation {
+		using fn = bool(__fastcall*)(void*, void*);
+		bool __fastcall hook(void* this_pointer, void* edx);
+	}
+
+	namespace stop_foot_plant {
+		using fn = void(__fastcall*)(void*, void*, void*, void*, void*, void*);
+		void __fastcall hook(void* this_pointer, void* edx, void* bone_to_world, void* left_foot_chain, void* right_foot_chain, void* pos);
+	}
+
+	namespace build_transformations {
+		using fn = void(__fastcall*)(void*, void*, void*, void*, void*, const void*, int, void*);
+		void __fastcall hook(void* this_pointer, void* edx, void* hdr, void* pos, void* q, const void* camera_transform, int bone_mask, void* bone_computed);
+	}
+
+	namespace check_for_sequence_change {
+		using fn = void(__fastcall*)(void*, void*, void*, int, bool, bool);
+		void __fastcall hook(void* this_pointer, void* edx, void* hdr, int cur_sequence, bool force_new_sequence, bool interpolate);
+	}
+
+	namespace is_hltv {
+		using fn = bool(__fastcall*)(void*, void*);
+		bool __fastcall hook(void* this_pointer, void* edx);
+	}
+
+	namespace standard_blending_rules {
+		using fn = void(__fastcall*)(void*, void*, void*, void*, void*, float, int);
+		void __fastcall hook(void* this_pointer, void* edx, void* hdr, void* pos, void* q, float current_time, int bone_mask);
+	}
+	
 }

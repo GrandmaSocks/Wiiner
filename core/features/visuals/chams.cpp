@@ -34,7 +34,7 @@ void override_material_smoke(bool ignorez, bool wireframe, bool draw, const colo
 }
 
 void override_material_flat(bool ignorez, bool wireframe, bool flat, const color& rgba) {
-	auto material = interfaces::material_system->find_material("debug/debugambientcube", TEXTURE_GROUP_MODEL);
+	auto material = interfaces::material_system->find_material("vgui/white", TEXTURE_GROUP_MODEL);
 	material->set_material_var_flag(material_var_ignorez, ignorez);
 	material->set_material_var_flag(material_var_wireframe, wireframe);
 	material->set_material_var_flag(material_var_flat, flat);

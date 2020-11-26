@@ -6,6 +6,11 @@
 #include "../../dependencies/utilities/csgo.hpp"
 
 
+struct multi_select_item {
+	std::string name;
+	bool* value;
+};
+
 namespace menu_framework {
 
     void menu_movement(std::int32_t& x, std::int32_t& y, std::int32_t w, std::int32_t h);
@@ -14,9 +19,9 @@ namespace menu_framework {
 
     inline bool should_drag = false;
     inline bool should_move = false;
-
-	constexpr std::string_view keys_list[]{
-
+	
+	static std::string keys_list[]
+	{
 			   "Error", "Left Mouse", "Right Mouse", "Break", "Middle Mouse", "Mouse 4", "Mouse 5",
 			   "Error", "Backspace", "TAB", "Error", "Error", "Error", "ENTER", "Error", "Error", "SHIFT",
 			   "CTRL", "ALT", "PAUSE", "CAPS LOCK", "Error", "Error", "Error", "Error", "Error", "Error",
@@ -39,7 +44,7 @@ namespace menu_framework {
 			   "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error",
 			   "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error",
 			   "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error", "Error",
-			   "Error", "Error"
+			   "Error", "NONE"
 	};
 	
 };
@@ -59,5 +64,11 @@ namespace menu
 	void slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, float& value, float min_value, float max_value);
 	
 	void clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& opened, float& r, float& g, float& b);
+
+	void combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string label, bool& opened, std::vector<multi_select_item> items);
+
+	void keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, int& var, bool& opened, bool& otheropened);
+
+	void quotes(std::int32_t x, std::int32_t y, unsigned long font);
 	
 }

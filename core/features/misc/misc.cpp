@@ -118,14 +118,22 @@ void antiflash()
 void thirdperson()
 {
 
-	if (GetAsyncKeyState(VK_MBUTTON) & 1)
+	if (variables::misc::thirdpersonbind != 256 && GetAsyncKeyState(variables::misc::thirdpersonbind) & 1)
+	{
 		variables::misc::thirdperson = !variables::misc::thirdperson;
+	}
+
+	if (variables::misc::thirdpersonbind == 256)
+	{
+		variables::misc::thirdperson = true;
+	}
 
 	if (interfaces::input->camera_in_third_person = variables::misc::thirdperson)
 	{
 		interfaces::input->camera_offset.z = 100;
 		interfaces::input->camera_offset.x = 0;
 	}
+
 }
 
 void set_clantag(std::string clantag)
@@ -183,7 +191,6 @@ void clantag()
 
 void crosshair()
 {
-
 	if (variables::aimbots::legit::crosshair == true && variables::aimbots::legit::rcs == false && interfaces::engine->is_in_game())
 	{
 		if (!csgo::local_player || !csgo::local_player->is_alive())
@@ -249,14 +256,8 @@ void Fov()
 
 	if (!csgo::local_player->is_alive())
 		return;
-	
-	if (variables::fov::fovOveride == true)
-	{
-		if (csgo::local_player)
-		{
-			
-		}
-	}
+
+
 }
 
 void watermark()
@@ -276,11 +277,11 @@ void watermark()
 				{
 					if (csgo::local_player == nullptr)
 						return;
-					
+
 					std::string name = playerinfo.name;
 					std::string weapon = csgo::local_player->active_weapon()->get_weapon_data()->weapon_name_alt;
-					
-					render::draw_filled_rect(1600, 30, 500, 20, color(45,45,45,120));
+
+					render::draw_filled_rect(1600, 30, 500, 20, color(45, 45, 45, 120));
 					render::draw_text_string(1720, 33, render::fonts::watermark_font, name + " | ", true, color(255, 255, 255));
 					render::draw_text_string(1840, 33, render::fonts::watermark_font, weapon + " | ", true, color(255, 255, 255));
 				}
@@ -296,7 +297,7 @@ void knifehandFlip()
 
 	if (csgo::local_player == nullptr)
 		return;
-	
+
 	if (variables::misc::knifehandflip)
 	{
 		if (csgo::local_player->active_weapon()->get_weapon_data()->weapon_type == WEAPONTYPE_KNIFE)
@@ -316,10 +317,10 @@ void spreadxhair()
 	{
 		if (!csgo::local_player || !csgo::local_player->is_alive())
 			return;
-		
+
 		if (csgo::local_player == nullptr)
 			return;
-		
+
 		std::pair<int, int> screen_size;
 
 		interfaces::surface->get_screen_size(screen_size.first, screen_size.second);
@@ -330,27 +331,29 @@ void spreadxhair()
 
 		float inaccuracy = csgo::local_player->active_weapon()->get_weapon_data()->weapon_inaccuracy_stand;
 		float spreaddist = ((inaccuracy + spread) * 320.0f / tanf(DEG2RAD(6) / 2));
-		
+
 		spreaddist = (int)(spreaddist * ((float)(screen_size.second) / 480.0f));
-		
-		render::draw_circle(x, y, spreaddist, 3, color(75, 75, 75));		
+
+		render::draw_circle(x, y, spreaddist, 3, color(75, 75, 75));
 	}
 }
 
 void hitlogs(i_game_event* event)
 {
-	if (event->get_name() == "player_hurt")
-	{
-		int attacker = interfaces::engine->get_player_for_user_id(event->get_int("attacker"));
-		int victim = interfaces::engine->get_player_for_user_id(event->get_int("userid"));
 
-		if (attacker == interfaces::engine->get_local_player() && victim != interfaces::engine->get_local_player())
+}
+
+void dispatch_logs()
+{
+	if (interfaces::engine->is_in_game())
+	{
+		if (csgo::local_player == nullptr)
+			return;
+
+		if (GetAsyncKeyState(VK_F8) & 1)
 		{
-			float duration = 5.0f;
-			
-			HitgroupToName(event->get_int("hitgroup"));
-			
+			interfaces::client->dispatch_user_message(cs_um_hudmsg, 0, 0, "\"x0C\"[WIINER] Test Message");
 		}
-		
+
 	}
 }

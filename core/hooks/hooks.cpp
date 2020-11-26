@@ -10,6 +10,12 @@ hooks::frame_stage_notify::fn frame_stage_notify_original = nullptr;
 hooks::draw_model_execute::fn draw_model_execute_original = nullptr;
 hooks::sv_cheats::fn sv_cheats_original = nullptr;
 hooks::viewmodelfov::fn viewmodelfovorginal = nullptr;
+hooks::skipanimation::fn animation_frame_original = nullptr;
+hooks::stop_foot_plant::fn foot_plant_original = nullptr;
+hooks::build_transformations::fn build_transformations_original = nullptr;
+hooks::check_for_sequence_change::fn check_for_sequence_original = nullptr;
+hooks::is_hltv::fn htlv_original = nullptr;
+hooks::standard_blending_rules::fn standard_blending_rules_original = nullptr;
 
 bool hooks::initialize() {
 	const auto create_move_target = reinterpret_cast<void*>(get_virtual(interfaces::clientmode, 24));
@@ -19,7 +25,13 @@ bool hooks::initialize() {
 	const auto draw_model_execute = reinterpret_cast<void*>(get_virtual(interfaces::model_render, 21));
 	const auto sv_cheats = reinterpret_cast<void*>(get_virtual(interfaces::console->get_convar("sv_cheats"), 13));
 	const auto viewmodelfov = reinterpret_cast<void*>(get_virtual(interfaces::clientmode, 35));
-
+	const auto animationframe = reinterpret_cast<void*>(utilities::pattern_scan("client.dll", "57 8B F9 8B 07 8B 80 ? ? ? ? FF D0 84 C0 75 02 5F C3"));
+	const auto foot_plant = reinterpret_cast<void*>(utilities::pattern_scan("client.dll", "55 8B EC 83 E4 F0 83 EC 78 56 8B F1 57 8B 56 60"));
+	const auto build_transformations = reinterpret_cast<void*>(utilities::pattern_scan("client.dll", "55 8B EC 56 8B 75 18 57"));
+	const auto check_for_sequence = reinterpret_cast<void*>(utilities::pattern_scan("client.dll", "55 8B EC 51 53 8B 5D 08 56 8B F1 57 85"));
+	const auto hltv_target = reinterpret_cast<void*>(get_virtual(interfaces::engine, 93));
+	const auto standard_blending_rules_target = reinterpret_cast<void*>(utilities::pattern_scan("client.dll", "55 8B EC 83 E4 F0 B8 ? ? ? ? E8 ? ? ? ? 56 8B 75 08 57 8B F9 85 F6"));
+	
 	if (MH_Initialize() != MH_OK)
 		throw std::runtime_error("failed to initialize MH_Initialize.");
 
@@ -40,10 +52,28 @@ bool hooks::initialize() {
 
 	if (MH_CreateHook(viewmodelfov, &viewmodelfov::hook, reinterpret_cast<void**>(&viewmodelfovorginal)) != MH_OK)
 		throw std::runtime_error("failed to initialize view model fov. (outdated index?)");
+
+	if (MH_CreateHook(animationframe, &skipanimation::hook, reinterpret_cast<void**>(&animation_frame_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize skip animation frame. (outdated index?)");
+
+	if (MH_CreateHook(foot_plant, &stop_foot_plant::hook, reinterpret_cast<void**>(&foot_plant_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize do procedural foot plant. (outdated index?)");
+
+	if (MH_CreateHook(build_transformations, &build_transformations::hook, reinterpret_cast<void**>(&build_transformations_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize build transformations. (outdated index?)");
+
+	if (MH_CreateHook(check_for_sequence, &check_for_sequence_change::hook, reinterpret_cast<void**>(&check_for_sequence_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize check for sequence change. (outdated index?)");
+
+	if (MH_CreateHook(hltv_target, &is_hltv::hook, reinterpret_cast<void**>(&htlv_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize is_hltv. (outdated index?)");
+
+	if (MH_CreateHook(standard_blending_rules_target, &standard_blending_rules::hook, reinterpret_cast<void**>(&standard_blending_rules_original)) != MH_OK)
+		throw std::runtime_error("failed to initialize standard blending rules. (outdated index?)");
 	
 	if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
 		throw std::runtime_error("failed to enable hooks.");
-
+	
 	console::log("[setup] hooks initialized!\n");
 
 	return true;
@@ -79,7 +109,7 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 	backtrack.update();
 	
 	misc::movement::bunny_hop(cmd);
-	rcs(cmd);
+	rcs(cmd, cmd->viewangles);
 	aimbot(cmd);
 	clantag();
 	triggerbot(cmd);
@@ -112,18 +142,20 @@ bool __stdcall hooks::create_move::hook(float input_sample_frametime, c_usercmd*
 
 void __stdcall hooks::paint_traverse::hook(unsigned int panel, bool force_repaint, bool allow_force) {
 	auto panel_to_draw = fnv::hash(interfaces::panel->get_panel_name(panel));
-
+	
 	switch (panel_to_draw) {
 	case fnv::hash("MatSystemTopPanel"):
-
+		
 		antiflash();
 		esp();
 		boneesp();
 		crosshair();
 		spreadxhair();
-		watermark();
+		dropped_weapons();
+		bombesp();
+		// watermark();
 		menu::toggle();
- 		menu::render();;
+ 		menu::render();
 
 		
 		break;
@@ -171,7 +203,9 @@ void __stdcall hooks::frame_stage_notify::hook(client_frame_stage_t frame_stage)
 		if (local)
 		{
 			thirdperson();
+			dispatch_logs();
 		}
+		
 		break;
 	case FRAME_RENDER_END:
 		break;
@@ -225,4 +259,56 @@ float __fastcall hooks::viewmodelfov::hook(PVOID convar)
 	{
 		return viewmodelfovorginal(convar);
 	}
+}
+
+bool __fastcall hooks::skipanimation::hook(void* this_pointer, void* edx)
+{
+	/*
+	 Prevent copying cached bone data	 
+	*/
+	
+	return false;
+}
+
+void __fastcall hooks::stop_foot_plant::hook(void* this_pointer, void* edx, void* bone_to_world, void* left_foot_chain, void* right_foot_chain, void* pos)
+{
+
+	/*
+	returning nothing prevents leg shuffling 
+	*/
+	
+	return;
+}
+
+void __fastcall hooks::build_transformations::hook(void* this_pointer, void* edx, void* hdr, void* pos, void* q, const void* camera_transform, int bone_mask, void* bone_computed)
+{
+
+	const auto player = reinterpret_cast<player_t*>(this_pointer);
+
+	/*
+	 Stops jiggle physics maybe
+	 */
+	
+	player->jiggle_bones_enabled();
+
+	return build_transformations_original(this_pointer, edx, hdr, pos, q, camera_transform, bone_mask, bone_computed);
+}
+
+void __fastcall hooks::check_for_sequence_change::hook(void* this_pointer, void* edx, void* hdr, int cur_sequence, bool force_new_sequence, bool interpolate)
+{
+	/* Disable nasty ol interpolation */
+
+	return check_for_sequence_original(this_pointer, edx, hdr, cur_sequence, force_new_sequence, false);
+}
+
+bool __fastcall hooks::is_hltv::hook(void* this_pointer, void* edx)
+{
+
+	return htlv_original(this_pointer, edx);
+}
+
+void __fastcall hooks::standard_blending_rules::hook(void* this_pointer, void* edx, void* hdr, void* pos, void* q, float current_time, int bone_mask)
+{
+
+	standard_blending_rules_original(this_pointer, edx, hdr, pos, q, current_time, bone_mask);
 }

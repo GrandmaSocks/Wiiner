@@ -333,7 +333,9 @@ public:
 	}
 
 	weapon_info_t* get_weapon_data() {
+
 		return interfaces::weapon_system->get_weapon_data(this->item_definition_index());
+		
 	}
 };
 
@@ -382,6 +384,14 @@ public:
 		NETVAR("DT_CSPlayer", "m_nTickBase", get_tick_base, int)
 		NETVAR("CBasePlayer", "m_iFOV", fov, int)
 
+		NETVAR("DT_PlantedC4", "m_bBombTicking", c4_is_ticking, bool)
+		NETVAR("DT_PlantedC4", "m_bBombDefused", c4_is_defused, bool)
+		NETVAR("DT_PlantedC4", "m_hBombDefuser", c4_gets_defused, float)
+		NETVAR("DT_PlantedC4", "m_flC4Blow", c4_blow_time, float)
+		NETVAR("DT_PlantedC4", "m_flDefuseCountDown", c4_defuse_countdown, float)
+		NETVAR("DT_PlantedC4", "m_flTimerLength", c4_timer_length, float)
+		NETVAR("DT_PlantedC4", "nBombSite", nBombSite, int)
+	
 	weapon_t* active_weapon()
 	{
 		auto active_weapon = read<uintptr_t>(netvar_manager::get_net_var(fnv::hash("DT_CSPlayer"), fnv::hash("m_hActiveWeapon"))) & 0xFFF;
@@ -508,4 +518,15 @@ public:
 		static int type = netvar_manager::get_net_var(fnv::hash("DT_BaseEntity"), fnv::hash("m_nRenderMode")) + 1;
 		return read<int>(type);
 	}
+
+	bool jiggle_bones_enabled()
+	{
+		return 0x2944 - 0x18;
+	}
+
+	void* get_effects()
+	{
+		return utilities::pattern_scan("client.dll", "8B 87 ? ? ? ? C1 E8 03 C6") + 0x2;
+	}
+	
 };
