@@ -1,6 +1,35 @@
 #pragma once
 #include "../../dependencies/utilities/csgo.hpp"
 #include "../variables.hpp"
+#include "../features/features.hpp"
+#pragma once
+#include <windows.h>
+#include <iostream>
+#include <cstdint>
+#include <memory>
+#include <vector>
+#include <thread>
+#include <chrono>
+#include <array>
+#include <fstream>
+#include <istream>
+#include <unordered_map>
+#include <intrin.h>
+#include <filesystem>
+
+#include "../dependencies/"
+
+#include "../dependencies/utilities/singleton.hpp"
+#include "../dependencies/utilities/fnv.hpp"
+#include "../dependencies/utilities/utilities.hpp"
+#include "../dependencies/minhook/minhook.h"
+#include "../dependencies/interfaces/interfaces.hpp"
+#include "../source-sdk/sdk.hpp"
+#include "../../core/hooks/hooks.hpp"
+#include "../dependencies/math/math.hpp"
+#include "../dependencies/utilities/renderer/renderer.hpp"
+#include "../dependencies/utilities/console/console.hpp"
+#include "../dependencies/utilities/csgo.hpp"
 
 namespace misc {
 	namespace movement {
@@ -9,16 +38,20 @@ namespace misc {
 }
 
 class WRAGEBOT
-{
+{	
 public:
-	static void ragebot(c_usercmd* cmd);
+	static bool ragebot(c_usercmd* cmd);
+	static void doaim(c_usercmd* cmd);
 	static void antiaim(c_usercmd* cmd);
-	static void autowall(c_usercmd* cmd);
 	static void safepoint(c_usercmd* cmd);
-	static void hitchance(c_usercmd* cmd);
+	static bool hitchance(player_t* player, weapon_t* weapon, vec3_t angle, int chance);
 	static void mindmg(c_usercmd* cmd);
 	static void fixpvs();
 	static void animfix();
+	static bool bone_visible(player_t* player, int bone);
+	static void autopistol(c_usercmd* cmd);
+	static vec3_t hitbox(player_t* player, int mode, c_usercmd* cmd);
+	static void Run(c_usercmd* cmd);
 };
 
 void hitlogs(i_game_event* event);
@@ -82,3 +115,5 @@ namespace cfg
 void dropped_weapons();
 
 void dispatch_logs();
+
+void keystroke_display();

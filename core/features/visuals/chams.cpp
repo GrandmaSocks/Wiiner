@@ -34,7 +34,7 @@ void override_material_smoke(bool ignorez, bool wireframe, bool draw, const colo
 }
 
 void override_material_flat(bool ignorez, bool wireframe, bool flat, const color& rgba) {
-	auto material = interfaces::material_system->find_material("vgui/white", TEXTURE_GROUP_MODEL);
+	auto material = interfaces::material_system->find_material("debug/debugdrawflat", TEXTURE_GROUP_MODEL);
 	material->set_material_var_flag(material_var_ignorez, ignorez);
 	material->set_material_var_flag(material_var_wireframe, wireframe);
 	material->set_material_var_flag(material_var_flat, flat);
@@ -53,7 +53,7 @@ void override_material_gloss(bool ignorez, bool wireframe, const color& rgba) {
 }
 
 void override_material_crystal(bool ignorez, bool wireframe, const color& rgba) {
-	auto material = interfaces::material_system->find_material("models/inventory_items/trophy_majors/crystal_blue", TEXTURE_GROUP_MODEL);
+	auto material = interfaces::material_system->find_material("debug/debugtranslucentvertexcolor", TEXTURE_GROUP_MODEL);
 	material->set_material_var_flag(material_var_ignorez, ignorez);
 	material->set_material_var_flag(material_var_wireframe, wireframe);
 	material->alpha_modulate(rgba.a / 255.f);
@@ -160,8 +160,8 @@ void chams(i_mat_render_context* ctx, const draw_model_state_t& state, const mod
 	{
 		if (variables::Visuals::chams::chamsalways == true)
 		{
-			variables::Visuals::chams::chamsvisible == false; /* Saves cheat from having a stroke */
-			variables::Visuals::chams::chamsxqz == false;
+			variables::Visuals::chams::chamsvisible  = false; /* Saves cheat from having a stroke */
+			variables::Visuals::chams::chamsxqz = false;
 
 			if (is_player)
 			{

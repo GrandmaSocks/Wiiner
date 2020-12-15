@@ -1,4 +1,5 @@
 #pragma once
+#include "../features/features.hpp"
 
 static bool in_thirdperson = false;
 
@@ -6,6 +7,9 @@ namespace variables {
 
 	///////////////////////////////////////////
 
+
+	inline bool get_input = false;
+	
 	inline bool chamopened = false;
 	inline bool bchamsopened = false;
 	inline bool canshoot = false;
@@ -16,6 +20,7 @@ namespace variables {
 		inline bool lbunny = false;
 		inline bool antiflash = false;
 		inline bool thirdperson = false;
+		inline bool canrun = false;
 		inline bool dtag = false;
 		inline bool stag = false;
 		inline bool backtrack = true;
@@ -26,6 +31,7 @@ namespace variables {
 		inline bool knifehandflip = false;
 		inline bool spreadCircle = false;
 		inline bool classicmenu = true;
+		inline bool keystroke_display = true;
 
 		inline int thirdpersonbind = 256;
 		
@@ -135,7 +141,7 @@ namespace variables {
 
 		namespace legit
 		{
-			inline float legit_fov = 8.0f;
+			inline float legit_fov = 30.0f;
 			namespace pistols
 			{
 				namespace keybindings
@@ -250,8 +256,11 @@ namespace variables {
 
 		namespace rage
 		{
+			inline bool autowalling;
 			namespace pistols
 			{
+				inline bool prefer_baim = false;
+				inline bool lethal_baim = false;
 
 				////////////////////////////////////
 
@@ -259,6 +268,7 @@ namespace variables {
 				inline bool chest = false;
 				inline bool stomach = false;
 				inline bool pelvis = false;
+				inline bool arms = false;
 				inline bool legs = false;
 				
 				////////////////////////////////////
@@ -273,13 +283,16 @@ namespace variables {
 
 			namespace h_pistols
 			{
-
+				inline bool prefer_baim = false;
+				inline bool lethal_baim = false;
+				
 				////////////////////////////////////
 
 				inline bool head = false;
 				inline bool chest = false;
 				inline bool stomach = false;
 				inline bool pelvis = false;
+				inline bool arms = false;
 				inline bool legs = false;
 
 				////////////////////////////////////
@@ -294,12 +307,16 @@ namespace variables {
 
 			namespace scout
 			{
+				inline bool prefer_baim = false;
+				inline bool lethal_baim = false;
+
 				////////////////////////////////////
 
 				inline bool head = false;
 				inline bool chest = false;
 				inline bool stomach = false;
 				inline bool pelvis = false;
+				inline bool arms = false;
 				inline bool legs = false;
 
 				////////////////////////////////////
@@ -314,12 +331,16 @@ namespace variables {
 
 			namespace autos
 			{
+				inline bool prefer_baim = false;
+				inline bool lethal_baim = false;
+
 				////////////////////////////////////
 
 				inline bool head = false;
 				inline bool chest = false;
 				inline bool stomach = false;
 				inline bool pelvis = false;
+				inline bool arms = false;
 				inline bool legs = false;
 
 				////////////////////////////////////
@@ -334,12 +355,16 @@ namespace variables {
 
 			namespace awp
 			{
+				inline bool prefer_baim = false;
+				inline bool lethal_baim = false;
+
 				////////////////////////////////////
 
 				inline bool head = false;
 				inline bool chest = false;
 				inline bool stomach = false;
 				inline bool pelvis = false;
+				inline bool arms = false;
 				inline bool legs = false;
 
 				////////////////////////////////////
@@ -441,7 +466,8 @@ namespace variables {
 
 	///////////////////////////////////////////
 
-	namespace antiaim {
+	namespace antiaim
+	{
 		inline bool enabled = false;
 		inline bool pUp = false;
 		inline bool pDown = false;
@@ -462,8 +488,25 @@ namespace variables {
 
 	///////////////////////////////////////////
 
-	namespace menu {
+	namespace menu
+	{
 
+		namespace buttons
+		{
+			inline bool testbutton = false;
+		}
+		
+		namespace colorpickers
+		{
+			inline bool espoverrideopened = false;
+			
+			inline bool visibleopened = false;
+			inline bool xqzopened = false;
+
+			inline bool backtrackopen = false;
+			
+		}
+		
 		namespace binds
 		{
 			inline bool pistolbind = false;
@@ -505,10 +548,21 @@ namespace variables {
 			inline bool smg_trigger_slection = false;
 			inline bool rifle_trigger_slection = false;
 			inline bool sniper_trigger_slection = false;
+
+			inline bool flag_selection = false;
+			inline bool visible_material_selection = false;
+			inline bool xqz_material_selection = false;
+			
+			inline bool clantag_selection = false;
+			inline bool bhop_selection = false;
+
+			inline bool config_selection = false;
+			
 		}
 
 		inline bool opened = true;
-
+		inline bool footer = false;
+		
 	}
 
 	///////////////////////////////////////////

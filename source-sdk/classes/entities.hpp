@@ -312,6 +312,7 @@ public:
 		NETVAR("DT_BaseCombatWeapon", "m_iClip1", clip1_count, int)
 		NETVAR("DT_BaseCombatWeapon", "m_iClip2", clip2_count, int)
 		NETVAR("DT_BaseCombatWeapon", "m_iPrimaryReserveAmmoCount", primary_reserve_ammo_acount, int)
+		NETVAR("DT_BaseCombatWeapon", "m_flPostponeFireReadyTime", fire_ready, float_t)
 		NETVAR("DT_WeaponCSBase", "m_flRecoilIndex", recoil_index, float)
 		NETVAR("DT_WeaponCSBaseGun", "m_zoomLevel", zoom_level, float)
 		NETVAR("DT_BaseAttributableItem", "m_iItemDefinitionIndex", item_definition_index, short)
@@ -383,6 +384,7 @@ public:
 		NETVAR("DT_SmokeGrenadeProjectile", "m_nSmokeEffectTickBegin", smoke_grenade_tick_begin, int)
 		NETVAR("DT_CSPlayer", "m_nTickBase", get_tick_base, int)
 		NETVAR("CBasePlayer", "m_iFOV", fov, int)
+		NETVAR("DT_BaseEntity", "m_vecOrigin", vec_origin, vec3_t);
 
 		NETVAR("DT_PlantedC4", "m_bBombTicking", c4_is_ticking, bool)
 		NETVAR("DT_PlantedC4", "m_bBombDefused", c4_is_defused, bool)

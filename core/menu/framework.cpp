@@ -3,7 +3,9 @@
 POINT cursor;
 POINT cursor_corrected;
 
-void menu_framework::menu_movement(std::int32_t& x, std::int32_t& y, std::int32_t w, std::int32_t h) {
+void menu_framework::menu_movement(std::int32_t& x, std::int32_t& y, std::int32_t w, std::int32_t h)
+{
+
 	GetCursorPos(&cursor);
 
 	if (GetAsyncKeyState(VK_LBUTTON) < 0 && (cursor.x > x && cursor.x < x + w && cursor.y > y && cursor.y < y + h)) {
@@ -289,29 +291,26 @@ void menu::slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigne
 	render::text(x - 1, y - 8, font, string, false, color::white());
 }
 
-void menu::clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& opened, float& r, float& g, float& b)
+void menu::color_picker(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& opened, float& r, float& g, float& b)
 {
 	GetCursorPos(&cursor);
 
 	int w = 15, h = 10;
 
 	render::draw_filled_rect(x, y + 2, w, h, color(r, g, b));
-	render::draw_rect(x, y + 2, w, h, color(125, 125, 125));
+	render::draw_rect(x, y + 2, w, h, color(25, 25, 25, 255));
 
 	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h) && GetAsyncKeyState(VK_LBUTTON) & 1)
 		opened = !opened;
 
 	if (opened == true)
 	{
-		render::draw_filled_rect(x + 520, y, 400, 350, color(25, 25, 25, 255));
-		render::draw_rect(x + 520, y, 400, 350, color(125, 125, 125, 255));
+		render::draw_filled_rect(x + 250, y + 20, 150, 150, color(r, g, b, 255));
+		render::draw_rect(x + 250, y + 20, 150, 150, color(25, 25, 25, 255));
 
-		render::draw_filled_rect(x + 640, y + 90, 150, 150, color(r, g, b, 255));
-		render::draw_rect(x + 640, y + 90, 150, 150, color(r, g, b, 255));
-
-		menu::slider(x + 640, y + 240, 140, render::fonts::menucontent, "", r, 0, 255);
-		menu::slider(x + 640, y + 260, 140, render::fonts::menucontent, "", g, 0, 255);
-		menu::slider(x + 640, y + 280, 140, render::fonts::menucontent, "", b, 0, 255);
+		menu::slider(x + 250, y + 180, 120, render::fonts::menucontent, "R", r, 0, 255);
+		menu::slider(x + 250, y + 210, 120, render::fonts::menucontent, "G", g, 0, 255);
+		menu::slider(x + 250, y + 240, 120, render::fonts::menucontent, "B", b, 0, 255);
 
 		if ((cursor.x < position) && (cursor.x > position + w) && (cursor.y < y) && (cursor.y > y + h) && GetAsyncKeyState(VK_LBUTTON) & 1)
 		{
@@ -327,8 +326,9 @@ void menu::clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, uns
 
 }
 
-void menu::combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string label, bool& opened, std::vector<multi_select_item> items)
+void menu::combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string label, bool& opened, bool single, std::vector<multi_select_item> items)
 {
+
 	GetCursorPos(&cursor);
 
 	int w = 175, h = 20;
@@ -345,28 +345,96 @@ void menu::combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int
 	{
 		render::draw_text_string(x + 165, y + 20, font, "-", true, color(255, 255, 255));
 
+		render::draw_filled_rect(x, y + 50, w, h + height, color(25, 25, 25));
+		render::draw_rect(x, y + 50, w, h + height, color(52, 134, 235));
+
 		auto postion = 0;
-		for (auto item : items)
+		for (int i = 1; i <= items.size(); i++)
 		{
-			int textheight = y + 50;
-			render::draw_filled_rect(x, y + 50, w, h + height, color(25, 25, 25));
-			render::draw_rect(x, y + 50, w, h + height, color(52, 134, 235));
-			postion += 10;
+			int textheight = y + 35;
+			postion += 15;
 			textheight = textheight + postion;
-			render::draw_text_string(x + 2, textheight, font, item.name, false, color(255, 255, 255));
+
+			bool hovered = (cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < textheight + 20);
+
+			if (hovered && GetAsyncKeyState(VK_LBUTTON) & 1)
+			{
+				if (single) /* NOTE: Bug has to do with something in this if statment */
+				{
+
+					for (int i = 1; i <= items.size(); i++)
+					{
+						*items[i - 1].value = false;
+					}
+
+					*items[i - 1].value = !*items[i - 1].value;
+				}
+				else
+				{
+					*items[i - 1].value = !*items[i - 1].value;
+				}
+			}
+
+			bool selected = *items[i - 1].value >= 1;
+
+			render::draw_text_string(x + 2, textheight, font, items[i - 1].name.data(), false, selected ? color(52, 134, 235) : color::white());
+
 		}
 	}
 	else
 	{
 		render::draw_text_string(x + 165, y + 20, font, "+", true, color(255, 255, 255));
 	}
+	/*
+	auto postion = 0;
+	std::string name;
+	for (int i = 1; i <= items.size(); i++)
+	{
+		bool selected = *items[i - 1].value >= 1;
+		if (selected)
+		{
+			int text_x = x - 33;
+			postion += 35;
+			text_x = text_x + postion;
+			std::string name = items[i - 1].name + ",";
+			render::draw_text_string(text_x, y + 20, font, name, false, color(255, 255, 255));
+		}
+	}*/
+
+	std::string value_str;
+	int text_width;
+
+	for (auto& item_t : items)
+	{
+		if (*item_t.value)
+		{
+			if (value_str.length() > 0)
+			{
+				value_str += ", ";
+			}
+			value_str += item_t.name;
+		}
+	}
+
+	text_width = render::get_text_size(font, value_str.c_str()).length();
+	if (text_width > w - 18)
+	{
+		value_str.resize(w / 10);
+		value_str += " ...";
+	}
+	if (!value_str.length())
+	{
+		value_str += "None";
+	}
+
+	render::draw_text_string(x + 2, y + 20, font, value_str, false, color(255, 255, 255));
 
 }
 
 void menu::keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, int& var, bool& opened, bool& otheropened)
 {
 	GetCursorPos(&cursor);
-	
+
 	int w = 120, h = 20;
 
 	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h + 20) && GetAsyncKeyState(VK_LBUTTON) & 1)
@@ -397,18 +465,18 @@ void menu::keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsign
 		}
 		if (GetAsyncKeyState(VK_ESCAPE) || GetAsyncKeyState(VK_BACK))
 		{
-			var = 256;		
+			var = 256;
 		}
 	}
 
 	if (otheropened)
 	{
 		render::draw_filled_rect(x + 100, y, 150, 150, color(40, 40, 40));
-		render::draw_rect(x + 100, y, 150, 150, color(52, 134, 235));	
+		render::draw_rect(x + 100, y, 150, 150, color(52, 134, 235));
 	}
 
 	std::string key;
-	
+
 	if (var == 256)
 	{
 		key = "None";
@@ -417,7 +485,7 @@ void menu::keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsign
 	{
 		key = menu_framework::keys_list[var].data();
 	}
-	
+
 	render::draw_text_string(x - 37, y - 2, font, "{ ", true, color(52, 134, 235));
 	render::draw_text_string(x, y - 2, font, key, true, color(255, 255, 255));
 	render::draw_text_string(x + 37, y - 2, font, " }", true, color(52, 134, 235));
@@ -444,17 +512,86 @@ void menu::quotes(std::int32_t x, std::int32_t y, unsigned long font)
 
 	srand(time(NULL));
 
-	if (should) 
+	if (should)
 	{
-	
+
 		render::draw_text_string(x, y + 3, font, quotes[rand() % quotes.size()], false, color(255, 255, 255));
-		
+
 	}
 	 */
 
-	/*  Above is a dynamic version of our info footer, I like static more but might as well save this to look back at
-	 */
+	 /*  Above is a dynamic version of our info footer, I like static more but might as well save this to look back at
+	  */
 
-	render::draw_text_string(x, y + 3, font, "Welcome to Wiiner | Version: 0.5 | Ragebot in the Works | Menu has been remodeled", false, color(255, 255, 255));
+	if (variables::menu::footer)
+	{
+		render::draw_text_string(x, y + 3, font, "Welcome to Wiiner | Version: 0.5 | Ragebot in the Works | Menu has been remodeled", false, color(255, 255, 255));
+	}
+}
+
+void menu::button(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, std::string label, const std::function<void(bool&)>& func)
+{
+	GetCursorPos(&cursor);
+
+	int w = 175, h = 30;
+
+	static bool holder = false;
+
+	color txtcolor = color(255, 255, 255);
+
+	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h) && GetAsyncKeyState(VK_LBUTTON) & 1)
+	{
+		txtcolor = color(52, 134, 235);
+		func(holder);
+	}
+
+	render::draw_filled_rect(x, y, w, h, color(25, 25, 25));
+	render::draw_rect(x, y, w, h, color(52, 134, 235));
+	render::draw_text_string(x + 45, y + 5, font, label, false, txtcolor);
+}
+
+void menu::config_combo(std::int32_t x, std::int32_t y, std::int32_t height, std::int32_t position, unsigned long font, std::string label, bool& opened, const std::vector<std::string> items, int* value)
+{
+	GetCursorPos(&cursor);
+
+	int w = 175, h = 20;
+	int adaptive_height = 0;
+
+	if ((cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < y + h + 20) && GetAsyncKeyState(VK_LBUTTON) & 1)
+		opened = !opened;
+
+	render::draw_text_string(x, y, font, label, false, color(255, 255, 255));
+	render::draw_filled_rect(x, y + 20, w, h, color(25, 25, 25));
+	render::draw_rect(x, y + 20, w, h, color(52, 134, 235));
+
+	if (opened)
+	{
+		render::draw_text_string(x + 165, y + 20, font, "-", true, color(255, 255, 255));
+
+		render::draw_filled_rect(x, y + 50, w, h + height, color(25, 25, 25));
+		render::draw_rect(x, y + 50, w, h + height, color(52, 134, 235));
+
+		auto postion = 0;
+		for (int i = 1; i <= items.size(); i++)
+		{
+			int textheight = y + 35;
+			postion += 15;
+			textheight = textheight + postion;
+
+			bool hovered = (cursor.x > position) && (cursor.x < position + w) && (cursor.y > y) && (cursor.y < textheight + 20);
+
+			if (hovered && GetAsyncKeyState(VK_LBUTTON) & 1)
+			{			
+				*value = i;			
+			}
+
+		}
+	}
+	else
+	{
+		render::draw_text_string(x + 165, y + 20, font, "+", true, color(255, 255, 255));
+	}
+
+	render::draw_text_string(x + 2, y + 2, render::fonts::menucontent, items.at(*value), false, color(255, 255, 255, 255));
 	
 }

@@ -218,7 +218,7 @@ void esp(i_game_event* event) noexcept /* I just draw all player esp in this fun
 									int dmg = event->get_int("dmg_health");
 									std::string damage = std::to_string(dmg);
 
-									render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 45, render::fonts::espfont, damage, true, color(255, 0, 0));
+									render::draw_text_string(vecHeadScreen.x, vecHeadScreen.y - 45,		render::fonts::espfont, damage, true, color(255, 0, 0));
 								}
 
 							}

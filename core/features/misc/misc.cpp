@@ -4,52 +4,40 @@ void mouseStrafer(c_usercmd* cmd)
 {
 	if (variables::misc::autostrafe == true)
 	{
-		const int move_type = csgo::local_player->move_type();
+		static bool flip = true;
 
-		if (move_type == movetype_ladder || move_type == movetype_noclip || move_type == movetype_observer)
+		if (!csgo::local_player || !csgo::local_player->is_alive())
+			return;
 
-			if (variables::misc::pbunny == true && csgo::local_player->flags() & in_jump)
+		if (csgo::local_player->flags() & fl_onground)
+			return;
+
+		cmd->forwardmove = 0.0f;
+		cmd->sidemove = 0.0f;
+
+		if (cmd->mousedx < 0)
+		{
+			cmd->sidemove = -450.0f;
+		}
+		else if (cmd->mousedx > 0)
+		{
+			cmd->sidemove = 450.0f;
+		}
+		else
+		{
+			if (flip)
 			{
-				if (cmd->viewangles.y == 0)
-				{
-					if (cmd->buttons |= in_forward)
-					{
-						cmd->viewangles.y + 0;
-					}
-					else
-					{
-						cmd->buttons |= in_forward;
-						cmd->viewangles.y + 0;
-					}
-				}
-
-				if (cmd->viewangles.y == -90)
-				{
-					if (cmd->buttons |= in_moveleft)
-					{
-						cmd->viewangles.y + -90;
-					}
-					else
-					{
-						cmd->buttons |= in_forward;
-						cmd->viewangles.y + 0;
-					}
-				}
-
-				if (cmd->viewangles.y == 90)
-				{
-					if (cmd->buttons |= in_moveright)
-					{
-						cmd->viewangles.y + 90;
-					}
-					else
-					{
-						cmd->buttons |= in_forward;
-						cmd->viewangles.y + 0;
-					}
-				}
-
+				cmd->viewangles = math::normalize(vec3_t(cmd->viewangles.x, cmd->viewangles.y - 1.0f, 0.0f));
+				cmd->sidemove = -450.0f;
+				flip = false;
 			}
+			else
+			{
+				cmd->viewangles = math::normalize(vec3_t(cmd->viewangles.x, cmd->viewangles.y + 1.0f, 0.0f));
+				cmd->sidemove = 450.0f;
+				flip = true;
+			}
+		}
 	}
 }
 
@@ -117,23 +105,24 @@ void antiflash()
 
 void thirdperson()
 {
-
-	if (variables::misc::thirdpersonbind != 256 && GetAsyncKeyState(variables::misc::thirdpersonbind) & 1)
+	if (variables::misc::thirdperson)
 	{
-		variables::misc::thirdperson = !variables::misc::thirdperson;
-	}
+		if (variables::misc::thirdpersonbind != 256 && GetAsyncKeyState(variables::misc::thirdpersonbind) & 1)
+		{
+			variables::misc::canrun = !variables::misc::canrun;
+		}
 
-	if (variables::misc::thirdpersonbind == 256)
-	{
-		variables::misc::thirdperson = true;
-	}
+		if (variables::misc::thirdpersonbind == 256)
+		{
+			variables::misc::canrun = true;
+		}
 
-	if (interfaces::input->camera_in_third_person = variables::misc::thirdperson)
-	{
-		interfaces::input->camera_offset.z = 100;
-		interfaces::input->camera_offset.x = 0;
+		if (interfaces::input->camera_in_third_person = variables::misc::canrun)
+		{
+			interfaces::input->camera_offset.z = 100;
+			interfaces::input->camera_offset.x = 0;
+		}
 	}
-
 }
 
 void set_clantag(std::string clantag)
@@ -157,20 +146,28 @@ void clantag()
 			case 4:  clantag = "           Wiin"; break;
 			case 5:  clantag = "          Wiine"; break;
 			case 6:  clantag = "         Wiiner"; break;
-			case 7:  clantag = "         Wiiner"; break;
-			case 8:  clantag = "        Wiine r"; break;
-			case 9:  clantag = "      Wiin e r "; break;
-			case 10:  clantag = "     Wii n e r  "; break;
-			case 11:  clantag = "    Wi i n e r   "; break;
-			case 12:  clantag = "   W i i n e r    "; break;
-			case 13:  clantag = "    W i i n e r    "; break;
-			case 14:  clantag = "    W i i n e r    "; break;
-			case 15:  clantag = "    W i i n e r    "; break;
-			case 16:  clantag = "  Wi i n e r     "; break;
-			case 17:  clantag = " Wii n e r       "; break;
-			case 18:  clantag = " Wiin e r       "; break;
-			case 19:  clantag = " Wiine r       "; break;
-			case 20:  clantag = " Wiiner       "; break;
+			case 7:  clantag = "         WiinerH"; break;
+			case 8:  clantag = "         WiinerHa"; break;
+			case 9:  clantag = "         WiinerHac"; break;
+			case 10:  clantag = "        WiinerHack"; break;
+			case 11:  clantag = "        WiinerHac k"; break;
+			case 12:  clantag = "        WiinerHa c k"; break;
+			case 14:  clantag = "        WiinerH a c k"; break;
+			case 15:  clantag = "        Wiiner H a c k"; break;
+			case 16:  clantag = "        Wiine r H a c k"; break;
+			case 17:  clantag = "        Wiin e r H a c k"; break;
+			case 18:  clantag = "        Wii n e r H a c k"; break;
+			case 19:  clantag = "        Wi i n e r H a c k"; break;
+			case 20:  clantag = "        W i i n e r H a c k"; break;
+			case 21:  clantag = "        Wi i n e r H a c k"; break;
+			case 22:  clantag = "        Wii n e r H a c k"; break;
+			case 23:  clantag = "        Wiin e r H a c k"; break;
+			case 24:  clantag = "        Wiine r H a c k"; break;
+			case 25:  clantag = "        Wiiner H a c k"; break;
+			case 26:  clantag = "        WiinerH a c k"; break;
+			case 27:  clantag = "        WiinerHa c k"; break;
+			case 28:  clantag = "        WiinerHac k"; break;
+			case 29:  clantag = "        WiinerHack"; break;
 			}
 			set_clantag(clantag);
 			last_change = interfaces::globals->realtime;
@@ -179,7 +176,7 @@ void clantag()
 
 	if (variables::misc::stag == true)
 	{
-		set_clantag("Wiiner");
+		set_clantag("WiinerHack");
 	}
 
 	if (variables::misc::dtag == false && variables::misc::stag == false)
@@ -355,5 +352,73 @@ void dispatch_logs()
 			interfaces::client->dispatch_user_message(cs_um_hudmsg, 0, 0, "\"x0C\"[WIINER] Test Message");
 		}
 
+	}
+}
+
+void keystroke_display()
+{
+	if (interfaces::engine->is_in_game() && variables::misc::keystroke_display)
+	{
+		color wclr = color(255, 255, 255);
+		color aclr = color(255, 255, 255);
+		color sclr = color(255, 255, 255);
+		color dclr = color(255, 255, 255);
+		color shftclr = color(255, 255, 255);
+		color spaceclr = color(255, 255, 255);
+		
+		if (GetAsyncKeyState(0x57)) // W
+		{
+			wclr = color(52, 134, 235);
+		}
+
+		if (GetAsyncKeyState(0x41)) // A
+		{
+			aclr = color(52, 134, 235);
+		}
+
+		if (GetAsyncKeyState(0x53)) // S
+		{
+			sclr = color(52, 134, 235);
+		}
+
+		if (GetAsyncKeyState(0x44)) // D
+		{
+			dclr = color(52, 134, 235);
+		}
+
+		if (GetAsyncKeyState(VK_SHIFT)) // SHFT
+		{
+			shftclr = color(52, 134, 235);
+		}
+
+		if (GetAsyncKeyState(VK_SPACE)) // SPACE
+		{
+			spaceclr = color(52, 134, 235);
+		}
+		
+		render::draw_filled_rect(150, 450, 40, 40, color(35, 35, 35));
+		render::draw_rect(150, 450, 40, 40, wclr);
+		render::draw_text_string(163, 460, render::fonts::menucontent, "W", false, wclr);
+		
+		render::draw_filled_rect(150, 490, 40, 40, color(35, 35, 35));
+		render::draw_rect(150, 490, 40, 40, sclr);
+		render::draw_text_string(165, 500, render::fonts::menucontent, "S", false, sclr);
+		
+		render::draw_filled_rect(110, 490, 40, 40, color(35, 35, 35));
+		render::draw_rect(110, 490, 40, 40, aclr);
+		render::draw_text_string(125, 500, render::fonts::menucontent, "A", false, aclr);
+
+		render::draw_filled_rect(190, 490, 40, 40, color(35, 35, 35));
+		render::draw_rect(190, 490, 40, 40, dclr);
+		render::draw_text_string(205, 500, render::fonts::menucontent, "D", false, dclr);
+		
+		render::draw_filled_rect(40, 490, 70, 40, color(35, 35, 35));
+		render::draw_rect(40, 490, 70, 40, shftclr);
+		render::draw_text_string(55, 500, render::fonts::menucontent, "SHIFT", false, shftclr);
+
+		render::draw_filled_rect(40, 530, 190, 40, color(35, 35, 35));
+		render::draw_rect(40, 530, 190, 40, spaceclr);
+		render::draw_text_string(115, 540, render::fonts::menucontent, "SPACE", false, spaceclr);
+		
 	}
 }

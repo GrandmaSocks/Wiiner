@@ -32,7 +32,7 @@ player_t* closest_to_crosshair(c_usercmd* user_cmd) /* Target closest to crossha
 			continue;
 
 		delta = math::calculate_angle(csgo::local_player->get_eye_pos(), entity->get_eye_pos(), view_angles).length();
-		if (delta < best_delta && delta < variables::aimbots::legit::legit_fov)
+		if (delta < best_delta && delta < 40)
 		{
 			best_entity = entity;
 			best_delta = delta;

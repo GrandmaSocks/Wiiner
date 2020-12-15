@@ -54,4 +54,10 @@ public:
 	__int32		weapon_recoil_seed;
 	char		u13[0x68];
 	char		*weapon_traces_type;
+	std::uint32_t m_dmg; //0x00F0 
+	float m_armor_ratio; //0x00F4 
+	std::uint32_t m_bullets; //0x00F8 
+	float m_penetration; //0x00FC
+	float m_range; //0x0108
+	float m_range_modifier; //0x010C 
 };

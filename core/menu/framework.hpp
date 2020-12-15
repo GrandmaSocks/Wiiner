@@ -22,7 +22,7 @@ namespace menu_framework {
 	
 	static std::string keys_list[]
 	{
-			   "Error", "Left Mouse", "Right Mouse", "Break", "Middle Mouse", "Mouse 4", "Mouse 5",
+			   "None", "Left Mouse", "Right Mouse", "Break", "Mouse 3", "Mouse 4", "Mouse 5",
 			   "Error", "Backspace", "TAB", "Error", "Error", "Error", "ENTER", "Error", "Error", "SHIFT",
 			   "CTRL", "ALT", "PAUSE", "CAPS LOCK", "Error", "Error", "Error", "Error", "Error", "Error",
 			   "Error", "Error", "Error", "Error", "Error", "SPACEBAR", "PG UP", "PG DOWN", "END", "HOME", "Left",
@@ -63,12 +63,16 @@ namespace menu
 	
 	void slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, float& value, float min_value, float max_value);
 	
-	void clr_slider(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& opened, float& r, float& g, float& b);
+	void color_picker(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, const std::string string, bool& opened, float& r, float& g, float& b);
 
-	void combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string label, bool& opened, std::vector<multi_select_item> items);
+	void combo(std::int32_t x, std::int32_t y, std::int32_t position, std::int32_t height, unsigned long font, std::string label, bool& opened, bool single, std::vector<multi_select_item> items);
 
 	void keybind(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, int& var, bool& opened, bool& otheropened);
 
 	void quotes(std::int32_t x, std::int32_t y, unsigned long font);
+
+	void button(std::int32_t x, std::int32_t y, std::int32_t position, unsigned long font, std::string label, const std::function<void(bool&)>& func);
+
+	void config_combo(std::int32_t x, std::int32_t y, std::int32_t height, std::int32_t position, unsigned long font, std::string label, bool& opened, const std::vector<std::string> vecItems, int* value);
 	
 }
