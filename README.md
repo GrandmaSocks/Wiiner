@@ -1,26 +1,15 @@
 # Wiiner
 
-<b> CSGO Cheat developed using @designer1337 incredible base </b>
+<h1>CSGO Cheat</h1>
+<p> Im going to start a recode so making this one public <p>
+  
+<h1> Whats pasted? </h1>
+<li> Chams system </li>
+<li> Strafer </li>
+<li> Clantag System </li>
+<li> Recoil Crosshair </li>
 
-<b> <h2> Features </h2> </b>
-
-<h3>Aimbot/Legit</h3>
-<li>Aimbot</li>
-<li>Silent Aimbot</li>
-<li>RCS</li>
-<li>Recoil Crosshair</li>
-
-<h3>Rage</h3>
-<li>AntiAim</li>
-<li>Ragebot</li>
-
-<h3>Visual</h3>
-<li>ESP</li>
-<li>Chams</li>
-<li>Antiflash</li>
-
-
-<h3>Misc</h3>
-<li>BHOP</li>
-<li>Thirdperson</li>
-
+<h1> Thing's to do/add </h1>
+<li> Ragebot </li>
+<li> More Visuals </li>
+<li> Non low effort color pickers </li>
